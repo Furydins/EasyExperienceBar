@@ -3,8 +3,10 @@
 ## Notes: Experience Tracking Bar
 ## Author: FurydinWow
 ## Version: 0.1
+## SavedVariables: EasyExperienceDB
 Libs\LibStub\LibStub.lua
 Libs\AceAddon-3.0\AceAddon-3.0.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
 EasyExperienceBar.lua

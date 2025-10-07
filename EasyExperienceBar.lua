@@ -22,18 +22,20 @@ EasyExperienceBar.SelectQuestLogEntry = SelectQuestLogEntry or function() end
 EasyExperienceBar.IsQuestComplete = C_QuestLog.IsComplete or IsQuestComplete
 EasyExperienceBar.QuestReadyForTurnIn = C_QuestLog.ReadyForTurnIn or function() return false end
 
-EasyExperienceBar.session = EasyExperienceBar.session or {}
-EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
-EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or UnitXP("player")
-EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or UnitXPMax("player")
-EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or time()
-EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
-EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
-EasyExperienceBar.session.lastTimePlayedRequest = EasyExperienceBar.session.lastTimePlayedRequest or 0
-
-
 function EasyExperienceBar:OnInitialize()
     EasyExperienceBar:Print("Launched!")
+
+    EasyExperienceBar.sessionDB = LibStub("AceDB-3.0"):New("EasyExperienceDB")
+    EasyExperienceBar.session = EasyExperienceBar.sessionDB.char
+
+    EasyExperienceBar.session = EasyExperienceBar.session or {}
+    EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
+    EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or UnitXP("player")
+    EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or UnitXPMax("player")
+    EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime()
+    EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
+    EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
+    EasyExperienceBar.session.lastTimePlayedRequest = EasyExperienceBar.session.lastTimePlayedRequest or 0
 
     EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "WoWPro.MainFrame", _G.UIParent, _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
     EasyExperienceBar.MainFrame:SetPoint("CENTER", _G.UIParent, -7, 334.1)
@@ -47,10 +49,15 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.ProgressBar:SetValue(50)
     EasyExperienceBar.ProgressBar:Show()
 
+    EasyExperienceBar.Texts = EasyExperienceBar:CreateTexts(EasyExperienceBar.ProgressBar)
+
     EasyExperienceBar:UpdateQuestXP()
     EasyExperienceBar:CalculateValues()
+    EasyExperienceBar:UpdateTexts(EasyExperienceBar.Texts, EasyExperienceBar.customTexts)
 
 end
+--/run EasyExperienceBar:UpdateQuestXP(); EasyExperienceBar:CalculateValues(); EasyExperienceBar:UpdateTexts(EasyExperienceBar.Texts, EasyExperienceBar.customTexts)
+    
 
 function EasyExperienceBar:CreateProgressBar(parent)
     local progressBar = _G.CreateFrame("StatusBar", nil, EasyExperienceBar.MainFrame, _G.BackdropTemplateMixin and "BackdropTemplate")
@@ -77,10 +84,82 @@ function EasyExperienceBar:CreateBackgroundBar(parent)
     backgroundBar:SetSize(600, 30)
 
     backgroundBar:SetStatusBarTexture("Interface/Buttons/WHITE8X8")
-    backgroundBar:SetStatusBarColor(0.309, 0.564, 1.0, 0.5)
+    backgroundBar:SetStatusBarColor(0, 0, 0, 0.5)
     backgroundBar:SetMinMaxValues(0, 100)
     backgroundBar:SetValue(100)
     return backgroundBar
+end
+
+ function EasyExperienceBar:CreateTexts(frame)
+    local levelText = frame:CreateFontString()
+    levelText:SetPoint("LEFT", frame, "LEFT" , 5, 0)
+    levelText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
+    levelText:SetWidth(100)
+    levelText:SetJustifyH("LEFT")
+    levelText:SetTextColor(1,1,1)
+    levelText:SetText("Level Test")
+
+    local progressText = frame:CreateFontString()
+    progressText:SetPoint("CENTER", frame, "CENTER" , 0, 0)
+    progressText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
+    progressText:SetWidth(200)
+    progressText:SetJustifyH("CENTER")
+    progressText:SetTextColor(1,1,1)
+    progressText:SetText("Progress Test")
+
+    local percentText = frame:CreateFontString()
+    percentText:SetPoint("RIGHT", frame, "RIGHT" , -5, 0)
+    percentText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
+    percentText:SetJustifyH("RIGHT")
+    percentText:SetWidth(100)
+    percentText:SetText("Percent Test")
+
+    local levelTimeText = frame:CreateFontString()
+    levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 24)
+    levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    levelTimeText:SetWidth(200)
+    levelTimeText:SetJustifyH("LEFT")
+    levelTimeText:SetText("Level Time")
+
+    local sessionTimeText = frame:CreateFontString()
+    sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 24)
+    sessionTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    sessionTimeText:SetJustifyH("RIGHT")
+    sessionTimeText:SetWidth(200)
+    sessionTimeText:SetText("Session Time")
+
+    local timeToLevelText = frame:CreateFontString()
+    timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -24)
+    timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    timeToLevelText:SetWidth(250)
+    timeToLevelText:SetJustifyH("LEFT")
+    timeToLevelText:SetText("Time To Level")
+
+    local statText = frame:CreateFontString()
+    statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -24)
+    statText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    statText:SetJustifyH("RIGHT")
+    statText:SetWidth(280)
+    statText:SetText("Stats")
+
+
+    return { levelText = levelText,
+             progressText = progressText,
+             percentText = percentText,
+             levelTimeText = levelTimeText,
+             sessionTimeText = sessionTimeText,
+             timeToLevelText = timeToLevelText,
+             statText = statText, }
+ end
+
+function EasyExperienceBar:UpdateTexts(textDisplays, textValues)
+    textDisplays.levelText:SetText(textValues.c1)
+    textDisplays.progressText:SetText(textValues.c2)
+    textDisplays.percentText:SetText(textValues.c3)
+    textDisplays.timeToLevelText:SetText(textValues.c4)
+    textDisplays.statText:SetText(textValues.c5)
+    textDisplays.levelTimeText:SetText(textValues.c6)
+    textDisplays.sessionTimeText:SetText(textValues.c7)
 end
 
 
@@ -97,7 +176,6 @@ function EasyExperienceBar:CalculateValues()
         local totalTime = EasyExperienceBar.session.realTotalTime or 0
         local levelTime = EasyExperienceBar.session.realLevelTime or 0
         local currentTime = _G.GetTime()
-        sessionTime = 0
         local hourlyXP, timeToLevel = 0, 0
         local gainedXP = EasyExperienceBar.session.gainedXP or 0
         local currentXP = _G.UnitXP("player") or 0
@@ -113,13 +191,21 @@ function EasyExperienceBar:CalculateValues()
             totalTime = currentTime - EasyExperienceBar.session.lastTimePlayedRequest + EasyExperienceBar.session.realTotalTime
             levelTime = currentTime - EasyExperienceBar.session.lastTimePlayedRequest + EasyExperienceBar.session.realLevelTime
         end
-        
+
+        EasyExperienceBar:Print(totalTime)
+        EasyExperienceBar:Print(levelTime)
+
+        EasyExperienceBar:Print( "Strat Time: " .. EasyExperienceBar.session.startTime)
         --cfg["EasyExperienceBar.sessiontime-text"] or cfg["showxphour-text"] 
         if true or true then
             if EasyExperienceBar.session.startTime > 0 then
                 EasyExperienceBar.sessionTime = currentTime - EasyExperienceBar.session.startTime
+                EasyExperienceBar:Print("Current Time " .. currentTime)
+                EasyExperienceBar:Print("Session Time " .. EasyExperienceBar.sessionTime)
+                EasyExperienceBar:Print("Start Time " .. EasyExperienceBar.session.startTime)
                 
                 local coeff = EasyExperienceBar.sessionTime / 3600
+                 EasyExperienceBar:Print("coeff " .. coeff)
                 
                 if coeff > 0 and gainedXP > 0 then
                     hourlyXP = ceil(gainedXP / coeff)
@@ -151,8 +237,8 @@ function EasyExperienceBar:CalculateValues()
             totalTimeText = EasyExperienceBar:FormatTime(totalTime),
             levelTime = levelTime,
             levelTimeText = EasyExperienceBar:FormatTime(levelTime),
-            sessionTime = sessionTime,
-            sessionTimeText = EasyExperienceBar:FormatTime(sessionTime),
+            sessionTime = EasyExperienceBar.sessionTime,
+            sessionTimeText = EasyExperienceBar:FormatTime(EasyExperienceBar.sessionTime),
             percentXP = totalXP > 0 and ((currentXP / totalXP) * 100) or 0,
             percentremaining = totalXP > 0 and ((remainingXP / totalXP) * 100) or 0,
             percentrested = totalXP > 0 and ((restedXP / totalXP) * 100) or 0,
@@ -208,15 +294,6 @@ function EasyExperienceBar:CalculateValues()
 end
 
 EasyExperienceBar.timerHandler = EasyExperienceBar.timerHandler or nil
-
---this.GetSavedVars = function()
---    local WAS = this.saved or {}
---    this.saved = WAS
---    
---    
-    
---    return WAS
---end
 
 function EasyExperienceBar:UpdateQuestXP()
     local numQ = C_QuestLog.GetNumQuestLogEntries()
@@ -364,7 +441,7 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         end
         
         -- cfg["questrested-text"]
-        if ctrue then
+        if true then
             c5 = string.format("Completed: |cFFFF9700%s%%|r - Rested: |cFF4F90FF%s%%|r", EasyExperienceBar:round(s.percentcomplete or 0, 1), EasyExperienceBar:round(s.percentrested or 0, 1))
         end
     end
