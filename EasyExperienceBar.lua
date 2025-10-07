@@ -22,8 +22,50 @@ EasyExperienceBar.SelectQuestLogEntry = SelectQuestLogEntry or function() end
 EasyExperienceBar.IsQuestComplete = C_QuestLog.IsComplete or IsQuestComplete
 EasyExperienceBar.QuestReadyForTurnIn = C_QuestLog.ReadyForTurnIn or function() return false end
 
+EasyExperienceBar.UpdateTimer = nil
+
+function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...)
+
+    if "PLAYER_ENTERING_WORLD" == event then 
+      if arg1 or (arg2 and false) then
+            EasyExperienceBar.session.gainedXP = 0
+            EasyExperienceBar.session.lastXP = currentXP
+            EasyExperienceBar.session.maxXP = maxXP
+            EasyExperienceBar.session.startTime = _G.GetTime()
+        end
+     elseif "PLAYER_LEVEL_UP" == event then
+        EasyExperienceBar.level = arg1 or EasyExperienceBar.level
+        EasyExperienceBar.isPlayerMaxLevel = EasyExperienceBar.level >= EasyExperienceBar:GetMaxLevel()
+        
+        EasyExperienceBar.session.realLevelTime = 0
+        EasyExperienceBar.lastSessionLevelTime = 0
+        EasyExperienceBar.currentSessionLevelStart = _G.GetTime()
+        EasyExperienceBar.session.maxXP = UnitXPMax("player")
+     elseif "UPDATE_EXPANSION_LEVEL" == event or "MAX_EXPANSION_LEVEL_UPDATED" == event then
+        local minExpLevel, maxExpLevel
+        
+        if arg3 then
+            minExpLevel = min(arg1, arg2, arg3, arg4)
+            maxExpLevel = max(arg1, arg2, arg3, arg4)
+        else
+            minExpLevel = GetExpansionLevel()
+            maxExpLevel = minExpLevel
+        end
+        
+        EasyExperienceBar.isPlayerMaxLevel = EasyExperienceBar.level >= EasyExperienceBar:GetMaxLevel(maxExpLevel)
+        
+        if EasyExperienceBar.level == _G.GetMaxLevelForExpansionLevel(minExpLevel) or (currentTime - session.startTime >= (86400 * 3)) then
+            session.startTime = currentTime
+        end
+    elseif "QUEST_LOG_UPDATE" == event or ("UNIT_QUEST_LOG_CHANGED" == event and arg1 == "player") then
+        EasyExperienceBar:Update()
+    elseif "PLAYER_XP_UPDATE" == event then
+        EasyExperienceBar:Update()
+    end  
+end
+
 function EasyExperienceBar:OnInitialize()
-    EasyExperienceBar:Print("Launched!")
+    -- EasyExperienceBar:Print("Launched!")
 
     EasyExperienceBar.sessionDB = LibStub("AceDB-3.0"):New("EasyExperienceDB")
     EasyExperienceBar.session = EasyExperienceBar.sessionDB.char
@@ -32,10 +74,14 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
     EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or UnitXP("player")
     EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or UnitXPMax("player")
-    EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime()
+    EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime() 
     EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
     EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
-    EasyExperienceBar.session.lastTimePlayedRequest = EasyExperienceBar.session.lastTimePlayedRequest or 0
+
+    EasyExperienceBar.lastSessionLevelTime = EasyExperienceBar.session.realLevelTime
+    EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
+    EasyExperienceBar.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
+    EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
 
     EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "WoWPro.MainFrame", _G.UIParent, _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
     EasyExperienceBar.MainFrame:SetPoint("CENTER", _G.UIParent, -7, 334.1)
@@ -51,11 +97,17 @@ function EasyExperienceBar:OnInitialize()
 
     EasyExperienceBar.Texts = EasyExperienceBar:CreateTexts(EasyExperienceBar.ProgressBar)
 
-    EasyExperienceBar:UpdateQuestXP()
-    EasyExperienceBar:CalculateValues()
-    EasyExperienceBar:UpdateTexts(EasyExperienceBar.Texts, EasyExperienceBar.customTexts)
+    EasyExperienceBar.UpdateTimer = C_Timer.NewTicker(0.5, function() EasyExperienceBar.Update() end)
+
+    EasyExperienceBar:RegisterEvents()
 
 end
+
+function EasyExperienceBar:RegisterEvents()
+    EasyExperienceBar.MainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    EasyExperienceBar.MainFrame:SetScript("OnEvent", EasyExperienceBar.EventHandler)
+end
+
 --/run EasyExperienceBar:UpdateQuestXP(); EasyExperienceBar:CalculateValues(); EasyExperienceBar:UpdateTexts(EasyExperienceBar.Texts, EasyExperienceBar.customTexts)
     
 
@@ -152,7 +204,16 @@ end
              statText = statText, }
  end
 
-function EasyExperienceBar:UpdateTexts(textDisplays, textValues)
+ function EasyExperienceBar:Update()
+   EasyExperienceBar:UpdateQuestXP()
+   EasyExperienceBar:CalculateValues()
+   EasyExperienceBar:UpdateTexts()
+ end
+
+function EasyExperienceBar:UpdateTexts()
+    local textDisplays = EasyExperienceBar.Texts
+    local textValues = EasyExperienceBar.customTexts
+
     textDisplays.levelText:SetText(textValues.c1)
     textDisplays.progressText:SetText(textValues.c2)
     textDisplays.percentText:SetText(textValues.c3)
@@ -187,25 +248,28 @@ function EasyExperienceBar:CalculateValues()
         local incompleteXP = EasyExperienceBar.incompleteXP or 0
         
         -- cfg["leveltime-text"]
-        if true and (EasyExperienceBar.session.lastTimePlayedRequest or 0) > 0 then
-            totalTime = currentTime - EasyExperienceBar.session.lastTimePlayedRequest + EasyExperienceBar.session.realTotalTime
-            levelTime = currentTime - EasyExperienceBar.session.lastTimePlayedRequest + EasyExperienceBar.session.realLevelTime
+        if true  then
+            totalTime = currentTime - EasyExperienceBar.currentTotalTimeStart + EasyExperienceBar.lastSessionTotalTime
+            levelTime = currentTime - EasyExperienceBar.currentSessionLevelStart + EasyExperienceBar.lastSessionLevelTime
         end
 
-        EasyExperienceBar:Print(totalTime)
-        EasyExperienceBar:Print(levelTime)
+        EasyExperienceBar.session.realLevelTime = levelTime
+        EasyExperienceBar.session.realTotalTime = totalTime
 
-        EasyExperienceBar:Print( "Strat Time: " .. EasyExperienceBar.session.startTime)
+        -- EasyExperienceBar:Print(totalTime)
+        -- EasyExperienceBar:Print(levelTime)
+
+        -- EasyExperienceBar:Print( "Strat Time: " .. EasyExperienceBar.session.startTime)
         --cfg["EasyExperienceBar.sessiontime-text"] or cfg["showxphour-text"] 
         if true or true then
             if EasyExperienceBar.session.startTime > 0 then
                 EasyExperienceBar.sessionTime = currentTime - EasyExperienceBar.session.startTime
-                EasyExperienceBar:Print("Current Time " .. currentTime)
-                EasyExperienceBar:Print("Session Time " .. EasyExperienceBar.sessionTime)
-                EasyExperienceBar:Print("Start Time " .. EasyExperienceBar.session.startTime)
+                -- EasyExperienceBar:Print("Current Time " .. currentTime)
+                -- EasyExperienceBar:Print("Session Time " .. EasyExperienceBar.sessionTime)
+                -- EasyExperienceBar:Print("Start Time " .. EasyExperienceBar.session.startTime)
                 
                 local coeff = EasyExperienceBar.sessionTime / 3600
-                 EasyExperienceBar:Print("coeff " .. coeff)
+                 -- EasyExperienceBar:Print("coeff " .. coeff)
                 
                 if coeff > 0 and gainedXP > 0 then
                     hourlyXP = ceil(gainedXP / coeff)
@@ -269,17 +333,13 @@ function EasyExperienceBar:CalculateValues()
         }
 
         
-        EasyExperienceBar:Print("currentXP: " .. allstates.currentXP)
-        EasyExperienceBar:Print("remainingXP: " .. allstates.remainingXP)
-        EasyExperienceBar:Print("PercentXP: " .. allstates.percentXP)
-        EasyExperienceBar:Print("totalXP: " .. allstates.totalXP)
+        -- EasyExperienceBar:Print("currentXP: " .. allstates.currentXP)
+        -- EasyExperienceBar:Print("remainingXP: " .. allstates.remainingXP)
+        -- EasyExperienceBar:Print("PercentXP: " .. allstates.percentXP)
+        -- EasyExperienceBar:Print("totalXP: " .. allstates.totalXP)
         EasyExperienceBar.ProgressBar:SetValue(allstates.percentXP)
         
         EasyExperienceBar:UpdateCustomTexts(allstates)
-        
-        EasyExperienceBar.timerHandler = C_Timer.NewTimer(1, function()
-                WeakAuras.ScanEvents("LWA_EXPERIENCE_UPDATE")
-        end)
         
         return true
         
@@ -382,7 +442,13 @@ function EasyExperienceBar:FormatTime(time, format)
     end
     
     -- Remove trailing spaces/zeroes/symbols
-    return strtrim(t:gsub("^%s*0*", ""):gsub("^%s*[DdHhMm]", ""), " :/-|")
+    local text = strtrim(t:gsub("^%s*0*", ""):gsub("^%s*[DdHhMm]", ""), " :/-|")
+
+    if text == "" then
+        return "< 1m"
+    end
+
+    return text
 end
 
 EasyExperienceBar.tickerRTP = EasyExperienceBar.tickerRTP or nil
@@ -470,6 +536,8 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         c7 = c7,
     }
 end
+
+
 
 
 
