@@ -24,6 +24,40 @@ EasyExperienceBar.QuestReadyForTurnIn = C_QuestLog.ReadyForTurnIn or function() 
 
 EasyExperienceBar.UpdateTimer = nil
 
+-- Options
+
+EasyExperienceBar.options = {}
+function EasyExperienceBar:Options()
+
+    EasyExperienceBar.global = EasyExperienceBar.sessionDB.global
+    if EasyExperienceBar.global.levelTimeText == nil then  EasyExperienceBar.global.levelTimeText = true end
+    if EasyExperienceBar.global.sessionTimeText == nil then  EasyExperienceBar.global.sessionTimeText = true end
+
+    local options = {
+        name = "Easy Experience Bar",
+        handler = EasyExperienceBar.options,
+        type = 'group',
+        args = {
+            levelTimeText = {
+                type = 'toggle',
+                name = 'Played Time Text',
+                desc = 'Show Level time text',
+                get = function(Info)  return EasyExperienceBar.global.levelTimeText end,
+                set = function(info,val) if EasyExperienceBar.global.levelTimeText then EasyExperienceBar.global.levelTimeText = false else EasyExperienceBar.global.levelTimeText = true end end,
+            },
+             sessionTimeText = {
+                type = 'toggle',
+                name = 'Session Time Text',
+                desc = 'Show current session time',
+                get = function(Info)  return EasyExperienceBar.global.sessionTimeText end,
+                set = function(info,val) if EasyExperienceBar.global.sessionTimeText then EasyExperienceBar.global.sessionTimeText = false else EasyExperienceBar.global.sessionTimeText = true end end,
+            },
+        },
+    }
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("EasyExperienceBar", options)
+    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
+end
+
 function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...)
 
     if "PLAYER_ENTERING_WORLD" == event then 
@@ -77,24 +111,27 @@ end
 function EasyExperienceBar:OnInitialize()
     -- EasyExperienceBar:Print("Launched!")
 
-    EasyExperienceBar.sessionDB = LibStub("AceDB-3.0"):New("EasyExperienceDB")
-    EasyExperienceBar.session = EasyExperienceBar.sessionDB.char
+    -- Saved Variables
+EasyExperienceBar.sessionDB = LibStub("AceDB-3.0"):New("EasyExperienceDB")
+EasyExperienceBar.session = EasyExperienceBar.sessionDB.char
 
-    EasyExperienceBar.session = EasyExperienceBar.session or {}
-    EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
-    EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or UnitXP("player")
-    EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or UnitXPMax("player")
-    EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime() 
-    EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
-    EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
+EasyExperienceBar.session = EasyExperienceBar.session or {}
+EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
+EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or UnitXP("player")
+EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or UnitXPMax("player")
+EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime() 
+EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
+EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
+-- EasyExperienceBar:Print(EasyExperienceBar.session.realLevelTime)
 
-    EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
-    EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
-    EasyExperienceBar.session.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
-    EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
+EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
+EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
+EasyExperienceBar.session.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
+EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
+
 
     EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "WoWPro.MainFrame", _G.UIParent, _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
-    EasyExperienceBar.MainFrame:SetPoint("CENTER", _G.UIParent, -7, 334.1)
+    EasyExperienceBar.MainFrame:SetPoint("CENTER", _G.UIParent, -7, 434.1)
     EasyExperienceBar.MainFrame:SetFrameStrata("BACKGROUND")
     EasyExperienceBar.MainFrame:SetSize(100, 17)
 
@@ -221,28 +258,28 @@ end
     percentText:SetText("Percent Test")
 
     local levelTimeText = frame:CreateFontString()
-    levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 24)
+    levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 15)
     levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
     levelTimeText:SetWidth(200)
     levelTimeText:SetJustifyH("LEFT")
     levelTimeText:SetText("Level Time")
 
     local sessionTimeText = frame:CreateFontString()
-    sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 24)
+    sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 15)
     sessionTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
     sessionTimeText:SetJustifyH("RIGHT")
-    sessionTimeText:SetWidth(200)
+    sessionTimeText:SetWidth(300)
     sessionTimeText:SetText("Session Time")
 
     local timeToLevelText = frame:CreateFontString()
-    timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -24)
+    timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
     timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
     timeToLevelText:SetWidth(250)
     timeToLevelText:SetJustifyH("LEFT")
     timeToLevelText:SetText("Time To Level")
 
     local statText = frame:CreateFontString()
-    statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -24)
+    statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -20)
     statText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
     statText:SetJustifyH("RIGHT")
     statText:SetWidth(280)
@@ -310,7 +347,7 @@ function EasyExperienceBar:CalculateValues()
     local incompleteXP = EasyExperienceBar.incompleteXP or 0
     
     -- cfg["leveltime-text"]
-    if true  then
+    if EasyExperienceBar.global.levelTimeText  then
         totalTime = (currentTime - EasyExperienceBar.currentTotalTimeStart) + EasyExperienceBar.session.lastSessionTotalTime
         levelTime = (currentTime - EasyExperienceBar.currentSessionLevelStart) + EasyExperienceBar.session.lastSessionLevelTime
     end
@@ -323,7 +360,7 @@ function EasyExperienceBar:CalculateValues()
 
     -- EasyExperienceBar:Print( "Strat Time: " .. EasyExperienceBar.session.startTime)
     --cfg["EasyExperienceBar.sessiontime-text"] or cfg["showxphour-text"] 
-    if true or true then
+    if EasyExperienceBar.global.sessionTimeText or true then
         if EasyExperienceBar.session.startTime > 0 then
             EasyExperienceBar.sessionTime = currentTime - EasyExperienceBar.session.startTime
             -- EasyExperienceBar:Print("Current Time " .. currentTime)
@@ -375,7 +412,7 @@ function EasyExperienceBar:CalculateValues()
     }
 
     EasyExperienceBar.ProgressBar:SetValue(allstates.percentXP)
-    EasyExperienceBar.QuestBar:SetValue(50) -- min(allstates.percentXP + allstates.percentcomplete, 100))
+    EasyExperienceBar.QuestBar:SetValue(min(allstates.percentXP + allstates.percentcomplete, 100))
     EasyExperienceBar.RestedBar:SetValue(min(allstates.percentXP + allstates.percentcomplete + allstates.percentrested, 100))
     
     EasyExperienceBar:UpdateCustomTexts(allstates)
@@ -541,7 +578,7 @@ function EasyExperienceBar:UpdateCustomTexts(state)
     end
     
     -- cfg["leveltime-text"]
-    if true then
+    if EasyExperienceBar.global.levelTimeText then
         if isMaxLevel then
             c6 = "Time played: " .. (s.totalTimeText or "")
         else
@@ -550,7 +587,7 @@ function EasyExperienceBar:UpdateCustomTexts(state)
     end
     
     -- cfg["sessiontime-text"]
-    if true then
+    if EasyExperienceBar.global.sessionTimeText then
         c7 = "Time this session: " .. (s.sessionTimeText or "")
     end
     
@@ -565,36 +602,6 @@ function EasyExperienceBar:UpdateCustomTexts(state)
     }
 end
 
--- Options
-
-EasyExperienceBar.options = {}
-function EasyExperienceBar:Options()
-
-    local options = {
-        name = "EasyExperienceBar",
-        handler = EasyExperienceBar.options,
-        type = 'group',
-        args = {
-            msg = {
-                type = 'input',
-                name = 'My Message',
-                desc = 'The message for my addon',
-                set = 'SetMyMessage',
-                get = 'GetMyMessage',
-            },
-        },
-    }
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("EasyExperienceBar", options)
-    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
-end
-
-function EasyExperienceBar:GetMyMessage(info)
-    return myMessageVar
-end
-
-function EasyExperienceBar:SetMyMessage(info, input)
-    myMessageVar = input
-end
 
 
 
