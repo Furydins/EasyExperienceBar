@@ -32,6 +32,11 @@ function EasyExperienceBar:Options()
     EasyExperienceBar.global = EasyExperienceBar.sessionDB.global
     if EasyExperienceBar.global.levelTimeText == nil then  EasyExperienceBar.global.levelTimeText = true end
     if EasyExperienceBar.global.sessionTimeText == nil then  EasyExperienceBar.global.sessionTimeText = true end
+    if EasyExperienceBar.global.showXpHourText == nil then  EasyExperienceBar.global.showXpHourText = true end
+    if EasyExperienceBar.global.questRestedText == nil then  EasyExperienceBar.global.questRestedText = true end
+    if EasyExperienceBar.global.showMaxLevel == nil then EasyExperienceBar.global.showMaxLevel = true end
+    if EasyExperienceBar.global.resetReload == nil then EasyExperienceBar.global.resetReload = false end
+    if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
 
     local options = {
         name = "Easy Experience Bar",
@@ -52,6 +57,41 @@ function EasyExperienceBar:Options()
                 get = function(Info)  return EasyExperienceBar.global.sessionTimeText end,
                 set = function(info,val) if EasyExperienceBar.global.sessionTimeText then EasyExperienceBar.global.sessionTimeText = false else EasyExperienceBar.global.sessionTimeText = true end end,
             },
+            showXpHourText = {
+                type = 'toggle',
+                name = 'Leveling Time & XP/Hour Text',
+                desc = 'Show an estimate of how long it takes to hit the next level',
+                get = function(Info)  return EasyExperienceBar.global.showXpHourText end,
+                set = function(info,val) if EasyExperienceBar.global.showXpHourText then EasyExperienceBar.global.showXpHourText = false else EasyExperienceBar.global.showXpHourText = true end end,
+            },
+            questRestedText = {
+                type = 'toggle',
+                name = 'Completed & Rested Text',
+                desc = 'Show how much rested XP and XP from completed quests the character has',
+                get = function(Info)  return EasyExperienceBar.global.questRestedText end,
+                set = function(info,val) if EasyExperienceBar.global.questRestedText then EasyExperienceBar.global.questRestedText = false else EasyExperienceBar.global.questRestedText = true end end,
+            },
+            showMaxLevel = {
+                type = 'toggle',
+                name = 'Show Bar at Max Level',
+                desc = 'Do not hide the bar on max level characters',
+                get = function(Info)  return EasyExperienceBar.global.showMaxLevel end,
+                set = function(info,val) if EasyExperienceBar.global.showMaxLevel then EasyExperienceBar.global.showMaxLevel = false else EasyExperienceBar.global.questRestedText = true end end,
+            },
+            resetReload = {
+                type = 'toggle',
+                name = 'Reset Session Time and XP/Hour on Reload UI',
+                desc = 'Do not retain stats after a /reload',
+                get = function(Info)  return EasyExperienceBar.global.resetReload end,
+                set = function(info,val) if EasyExperienceBar.global.resetReload then EasyExperienceBar.global.resetReload = false else EasyExperienceBar.global.resetReload = true end end,
+            },
+            hideXPBar = {
+                type = 'toggle',
+                name = 'Hide Default Experience Bar',
+                desc = 'Hides the standard XP bar',
+                get = function(Info)  return EasyExperienceBar.global.hideXpBar end,
+                set = function(info,val) if EasyExperienceBar.global.hideXpBar then EasyExperienceBar.global.hideXpBar = false else EasyExperienceBar.global.hideXpBar = true end end,
+            },
         },
     }
     LibStub("AceConfig-3.0"):RegisterOptionsTable("EasyExperienceBar", options)
@@ -61,7 +101,7 @@ end
 function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...)
 
     if "PLAYER_ENTERING_WORLD" == event then 
-        if arg1 or (arg2 and false) then
+        if arg1 or (arg2 and EasyExperienceBar.global.resetReload) then
             EasyExperienceBar.session.gainedXP = 0
             EasyExperienceBar.session.lastXP = currentXP
             EasyExperienceBar.session.maxXP = maxXP
@@ -78,7 +118,7 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
         EasyExperienceBar.currentSessionLevelStart = _G.GetTime()
         EasyExperienceBar.session.maxXP = UnitXPMax("player")
 
-        if EasyExperienceBar.isMaxLevel then 
+        if EasyExperienceBar.isMaxLevel and not EasyExperienceBar.showMaxLevel then 
             EasyExperienceBar.UpdateTimer:Cancel()
         end
      elseif "UPDATE_EXPANSION_LEVEL" == event or "MAX_EXPANSION_LEVEL_UPDATED" == event then
@@ -105,29 +145,41 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
         EasyExperienceBar:Update()
     elseif "PLAYER_XP_UPDATE" == event then
         EasyExperienceBar:Update()
-    end  
+    elseif "OPTIONS" == event then
+        EasyExperienceBar.Print("Got options")
+        if EasyExperienceBar.global.showMaxLevel and EasyExperienceBar.UpdateTimer and not EasyExperienceBar.UpdateTimer:IsCancelled() then
+            EasyExperienceBar:CreateTimer()
+        end
+        if StatusTrackingBarManager then 
+            if EasyExperienceBar.global.hideXpBar then
+                StatusTrackingBarManager:Hide()
+            else
+                 UIParent.Show(StatusTrackingBarManager)
+            end
+        end
+    end
 end
 
 function EasyExperienceBar:OnInitialize()
     -- EasyExperienceBar:Print("Launched!")
 
     -- Saved Variables
-EasyExperienceBar.sessionDB = LibStub("AceDB-3.0"):New("EasyExperienceDB")
-EasyExperienceBar.session = EasyExperienceBar.sessionDB.char
+    EasyExperienceBar.sessionDB = LibStub("AceDB-3.0"):New("EasyExperienceDB")
+    EasyExperienceBar.session = EasyExperienceBar.sessionDB.char
 
-EasyExperienceBar.session = EasyExperienceBar.session or {}
-EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
-EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or UnitXP("player")
-EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or UnitXPMax("player")
-EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime() 
-EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
-EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
--- EasyExperienceBar:Print(EasyExperienceBar.session.realLevelTime)
+    EasyExperienceBar.session = EasyExperienceBar.session or {}
+    EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
+    EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or UnitXP("player")
+    EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or UnitXPMax("player")
+    EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime() 
+    EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
+    EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
+    -- EasyExperienceBar:Print(EasyExperienceBar.session.realLevelTime)
 
-EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
-EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
-EasyExperienceBar.session.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
-EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
+    EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
+    EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
+    EasyExperienceBar.session.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
+    EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
 
 
     EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "WoWPro.MainFrame", _G.UIParent, _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
@@ -164,6 +216,11 @@ EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
 
     EasyExperienceBar:Options()
 
+    EasyExperienceBar:Print("Preparing to hide default bar")
+    if EasyExperienceBar.global.hideXpBar and StatusTrackingBarManager then
+        EasyExperienceBar:Print("Attempting to hide default bar")
+        StatusTrackingBarManager:Hide()
+    end
 end
 
 function EasyExperienceBar:CreateTimer()
@@ -296,7 +353,7 @@ end
  end
 
  function EasyExperienceBar:Update()
-     local show = not EasyExperienceBar.isPlayerMaxLevel
+     local show = not EasyExperienceBar.isPlayerMaxLevel or EasyExperienceBar.global.showMaxLevel
 
     if show then
         if not EasyExperienceBar.BackgroundBar:IsShown() then
@@ -360,7 +417,7 @@ function EasyExperienceBar:CalculateValues()
 
     -- EasyExperienceBar:Print( "Strat Time: " .. EasyExperienceBar.session.startTime)
     --cfg["EasyExperienceBar.sessiontime-text"] or cfg["showxphour-text"] 
-    if EasyExperienceBar.global.sessionTimeText or true then
+    if EasyExperienceBar.global.sessionTimeText or  EasyExperienceBar.global.showXpHourText  then
         if EasyExperienceBar.session.startTime > 0 then
             EasyExperienceBar.sessionTime = currentTime - EasyExperienceBar.session.startTime
             -- EasyExperienceBar:Print("Current Time " .. currentTime)
@@ -479,7 +536,7 @@ function EasyExperienceBar:round(num, decimals)
 end
 
 function EasyExperienceBar:FormatTime(time, format)
-    if time <= 59 then
+    if time < 60 then
         return "< 1m"
     end
     
@@ -565,14 +622,14 @@ function EasyExperienceBar:UpdateCustomTexts(state)
     
     if not isMaxLevel then
         -- cfg["showxphour-text"]
-        if true then
+        if EasyExperienceBar.global.showXpHourText then
             local hourlyXP = s.hourlyXP or 0
             
             c4 = string.format("Leveling in: %s (%s%s XP/Hour)", s.timeToLevelText or "", hourlyXP > 10000 and EasyExperienceBar:round(hourlyXP / 1000, 1) or FormatLargeNumber(hourlyXP), hourlyXP > 10000 and "K" or "")
         end
         
         -- cfg["questrested-text"]
-        if true then
+        if EasyExperienceBar.global.questRestedText then
             c5 = string.format("Completed: |cFFFF9700%s%%|r - Rested: |cFF4F90FF%s%%|r", EasyExperienceBar:round(s.percentcomplete or 0, 1), EasyExperienceBar:round(s.percentrested or 0, 1))
         end
     end
