@@ -147,7 +147,7 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
             EasyExperienceBar.session.lastXP = _G.UnitXP("player") or 0
             EasyExperienceBar.session.maxXP = _G.UnitXPMax("player") or 0
             EasyExperienceBar.session.startTime = _G.GetTime()
-            EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.realLevelTime
+            EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime
             EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
         end
     elseif "PLAYER_LEVEL_UP" == event then
@@ -185,6 +185,17 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
     elseif "QUEST_LOG_UPDATE" == event or ("UNIT_QUEST_LOG_CHANGED" == event and arg1 == "player") then
         EasyExperienceBar:Update()
     elseif "PLAYER_XP_UPDATE" == event then
+        local currentXP = _G.UnitXP("player") or 0
+        EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or currentXP
+        local gainedXP = currentXP - EasyExperienceBar.session.lastXP
+        
+        if gainedXP < 0 then
+            gainedXP =  EasyExperienceBar.session.maxXP - EasyExperienceBar.session.lastXP + currentXP
+        end
+        
+        EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP + gainedXP
+        EasyExperienceBar.session.lastXP = currentXP
+        EasyExperienceBar.session.lastXP = maxXP
         EasyExperienceBar:Update()
     end
 end
@@ -254,6 +265,12 @@ end
 
 function EasyExperienceBar:RegisterEvents()
     EasyExperienceBar.MainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    EasyExperienceBar.MainFrame:RegisterEvent("PLAYER_LEVEL_UP")
+    EasyExperienceBar.MainFrame:RegisterEvent("UPDATE_EXPANSION_LEVEL")
+    EasyExperienceBar.MainFrame:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED")
+    EasyExperienceBar.MainFrame:RegisterEvent("QUEST_LOG_UPDATE")
+    EasyExperienceBar.MainFrame:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
+    EasyExperienceBar.MainFrame:RegisterEvent("PLAYER_XP_UPDATE")
     EasyExperienceBar.MainFrame:SetScript("OnEvent", EasyExperienceBar.EventHandler)
 end
 
@@ -336,7 +353,7 @@ end
     percentText:SetPoint("RIGHT", frame, "RIGHT" , -5, 0)
     percentText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
     percentText:SetJustifyH("RIGHT")
-    percentText:SetWidth(100)
+    percentText:SetWidth(200)
     percentText:SetText("Percent Test")
 
     local levelTimeText = frame:CreateFontString()
@@ -356,7 +373,7 @@ end
     local timeToLevelText = frame:CreateFontString()
     timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
     timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
-    timeToLevelText:SetWidth(250)
+    timeToLevelText:SetWidth(300)
     timeToLevelText:SetJustifyH("LEFT")
     timeToLevelText:SetText("Time To Level")
 
@@ -441,6 +458,8 @@ function EasyExperienceBar:CalculateValues()
             EasyExperienceBar.sessionTime = currentTime - EasyExperienceBar.session.startTime
             
             local coeff = EasyExperienceBar.sessionTime / 3600
+
+            --EasyExperienceBar.Print("XP" .. coeff .. "::" .. gainedXP)
             
             if coeff > 0 and gainedXP > 0 then
                 hourlyXP = ceil(gainedXP / coeff)
