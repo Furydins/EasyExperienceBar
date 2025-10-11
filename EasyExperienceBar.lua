@@ -195,7 +195,7 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
         
         EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP + gainedXP
         EasyExperienceBar.session.lastXP = currentXP
-        EasyExperienceBar.session.lastXP = maxXP
+        EasyExperienceBar.session.maxXP = maxXP
         EasyExperienceBar:Update()
     end
 end
@@ -215,6 +215,7 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
 
     EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
+    EasyExperienceBar.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime
     EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
     EasyExperienceBar.session.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
     EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
@@ -325,7 +326,7 @@ function EasyExperienceBar:CreateQuestBar(parent)
     questBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
     questBar:SetSize(600, 30)
 
-    questBar:SetStatusBarTexture("Interface/Buttons/WHITE8X8")
+    questBar:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
     questBar:SetStatusBarColor(1.0, 0.589, 0.0, 1)
     questBar:SetMinMaxValues(0, 100)
     questBar:SetValue(100)
@@ -447,7 +448,8 @@ function EasyExperienceBar:CalculateValues()
     
     if EasyExperienceBar.global.levelTimeText  then
         totalTime = (currentTime - EasyExperienceBar.currentTotalTimeStart) + EasyExperienceBar.session.lastSessionTotalTime
-        levelTime = (currentTime - EasyExperienceBar.currentSessionLevelStart) + EasyExperienceBar.session.lastSessionLevelTime
+        levelTime = (currentTime - EasyExperienceBar.currentSessionLevelStart) + EasyExperienceBar.lastSessionLevelTime
+        EasyExperienceBar.session.lastSessionLevelTime = levelTime
     end
 
     EasyExperienceBar.session.realLevelTime = levelTime
@@ -458,12 +460,11 @@ function EasyExperienceBar:CalculateValues()
             EasyExperienceBar.sessionTime = currentTime - EasyExperienceBar.session.startTime
             
             local coeff = EasyExperienceBar.sessionTime / 3600
-
-            --EasyExperienceBar.Print("XP" .. coeff .. "::" .. gainedXP)
             
             if coeff > 0 and gainedXP > 0 then
                 hourlyXP = ceil(gainedXP / coeff)
                 timeToLevel = ceil(remainingXP / hourlyXP * 3600)
+                --EasyExperienceBar.Print("Rem" .. remainingXP .. "::" .. gainedXP .. ":"..hourlyXP .. ":" .. timeToLevel)
             end
         end
     end
