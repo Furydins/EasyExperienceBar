@@ -347,7 +347,7 @@ end
     local progressText = frame:CreateFontString()
     progressText:SetPoint("CENTER", frame, "CENTER" , 0, 0)
     progressText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
-    progressText:SetWidth(200)
+    progressText:SetWidth(350)
     progressText:SetJustifyH("CENTER")
     progressText:SetTextColor(1,1,1)
     progressText:SetText("Progress Test")
@@ -356,7 +356,7 @@ end
     percentText:SetPoint("RIGHT", frame, "RIGHT" , -5, 0)
     percentText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
     percentText:SetJustifyH("RIGHT")
-    percentText:SetWidth(200)
+    percentText:SetWidth(150)
     percentText:SetText("Percent Test")
 
     local levelTimeText = frame:CreateFontString()
