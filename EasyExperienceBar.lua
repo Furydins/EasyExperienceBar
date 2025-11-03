@@ -20,9 +20,11 @@ EasyExperienceBar.GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries or
 EasyExperienceBar.GetQuestIDForLogIndex = _G.C_QuestLog.GetQuestIDForLogIndex or function(i)
     return select(8, _G.GetQuestLogTitle(i))
 end
-EasyExperienceBar.SelectQuestLogEntry = _G.SelectQuestLogEntry or function() end
+
 EasyExperienceBar.IsQuestComplete = _G.C_QuestLog.IsComplete or _G.IsQuestComplete
 EasyExperienceBar.QuestReadyForTurnIn = _G.C_QuestLog.ReadyForTurnIn or function() return false end
+EasyExperienceBar.SetSelectedQuest = _G.C_QuestLog.SetSelectedQuest or _G.SelectQuestLogEntry
+
 
 EasyExperienceBar.UpdateTimer = nil
 
@@ -110,6 +112,7 @@ function EasyExperienceBar:Options()
                 name = 'Hide Default Experience Bar',
                 desc = 'Hides the standard XP bar',
                 width = "full",
+                hidden = function() return select(4, _G.GetBuildInfo()) < 100000 end,
                 get = function(info)  return EasyExperienceBar.global.hideXpBar end,
                 set = function(info,val) if EasyExperienceBar.global.hideXpBar then
                                             EasyExperienceBar.global.hideXpBar = false
@@ -221,11 +224,12 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
 
 
-    EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "WoWPro.MainFrame", _G.UIParent,
+    EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "EasyExperienceBar.MainFrame", _G.UIParent,
                   _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
-    EasyExperienceBar.MainFrame:SetPoint("CENTER", _G.UIParent, -7, 434.1)
+    EasyExperienceBar.MainFrame:SetPoint("TOP", _G.UIParent, -7, -70)
     EasyExperienceBar.MainFrame:SetFrameStrata("BACKGROUND")
-    EasyExperienceBar.MainFrame:SetSize(100, 17)
+    EasyExperienceBar.MainFrame:SetSize(600, 30)
+    EasyExperienceBar.MainFrame:SetMovable(true)
 
     EasyExperienceBar.BackgroundBar = EasyExperienceBar:CreateBackgroundBar(EasyExperienceBar.MainFrame)
     EasyExperienceBar.BackgroundBar:SetValue(100)
@@ -259,6 +263,17 @@ function EasyExperienceBar:OnInitialize()
     if EasyExperienceBar.global.hideXpBar and _G.StatusTrackingBarManager then
         _G.StatusTrackingBarManager:Hide()
     end
+
+    EasyExperienceBar.MainFrame:SetScript("OnMouseDown", function(this, button)
+        if button == "LeftButton" then
+            this:StartMoving()
+        end
+    end)
+    EasyExperienceBar.MainFrame:SetScript("OnMouseUp", function(this, button)
+        if button == "LeftButton" then
+            this:StopMovingOrSizing()
+        end
+    end)
 end
 
 function EasyExperienceBar:CreateTimer()
@@ -362,7 +377,7 @@ end
     local levelTimeText = frame:CreateFontString()
     levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 15)
     levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
-    levelTimeText:SetWidth(200)
+    levelTimeText:SetWidth(300)
     levelTimeText:SetJustifyH("LEFT")
     levelTimeText:SetText("Level Time")
 
@@ -517,20 +532,15 @@ function EasyExperienceBar:CalculateValues()
 end
 
 function EasyExperienceBar:UpdateQuestXP()
-    local _, numQ = _G.C_QuestLog.GetNumQuestLogEntries()
+    local _, numQ = EasyExperienceBar.GetNumQuestLogEntries()
     local questXP = 0
     local completeXP = 0
     local incompleteXP = 0
     local questID, rewardXP
-    local selQ = 0
-
-    if _G.GetQuestLogSelection then
-        selQ = _G.GetQuestLogSelection()
-    end
 
     for i = 1, numQ do
-        _G.C_QuestLog.SetSelectedQuest(i)
-        questID = _G.C_QuestLog.GetQuestIDForLogIndex(i)
+        EasyExperienceBar.SetSelectedQuest(i)
+        questID = EasyExperienceBar.GetQuestIDForLogIndex(i) 
 
         if questID > 0 then
             rewardXP = _G.GetQuestLogRewardXP(questID) or 0
@@ -538,7 +548,7 @@ function EasyExperienceBar:UpdateQuestXP()
             if rewardXP > 0 then
                 questXP = questXP + rewardXP
 
-                if _G.C_QuestLog.IsComplete(questID) or _G.C_QuestLog.ReadyForTurnIn(questID) then
+                if EasyExperienceBar.IsQuestComplete(questID) or EasyExperienceBar.QuestReadyForTurnIn(questID) then
                     completeXP = completeXP + rewardXP
                 else
                     incompleteXP = incompleteXP + rewardXP
@@ -551,16 +561,6 @@ function EasyExperienceBar:UpdateQuestXP()
     EasyExperienceBar.completeXP = completeXP
     EasyExperienceBar.incompleteXP = incompleteXP
 
-    if selQ > 0 then
-        EasyExperienceBar:SelectQuestLogEntry(selQ)
-        EasyExperienceBar:StaticPopup_Hide("ABANDON_QUEST")
-        EasyExperienceBar:StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS")
-
-        if _G.QuestLogControlPanel_UpdateState then
-            EasyExperienceBar:QuestLogControlPanel_UpdateState()
-            _G.SetAbandonQuest()
-        end
-    end
 end
 
 function EasyExperienceBar:round(num, decimals)
@@ -683,7 +683,3 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         c7 = c7,
     }
 end
-
-
-
-
