@@ -41,14 +41,21 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.showMaxLevel == nil then EasyExperienceBar.global.showMaxLevel = true end
     if EasyExperienceBar.global.resetReload == nil then EasyExperienceBar.global.resetReload = false end
     if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
+    if EasyExperienceBar.global.lockBar == nil then EasyExperienceBar.global.lockBar = false end
 
     local options = {
         name = "Easy Experience Bar",
         handler = EasyExperienceBar.options,
         type = 'group',
         args = {
+            header1 = {
+                type = 'header',
+                order = 0,
+                name = 'Information',
+            },
             levelTimeText = {
                 type = 'toggle',
+                order = 1,
                 name = 'Played Time Text',
                 desc = 'Show Level time text',
                 width = "full",
@@ -59,6 +66,7 @@ function EasyExperienceBar:Options()
             },
              sessionTimeText = {
                 type = 'toggle',
+                order = 2,
                 name = 'Session Time Text',
                 desc = 'Show current session time',
                 width = "full",
@@ -69,6 +77,7 @@ function EasyExperienceBar:Options()
             },
             showXpHourText = {
                 type = 'toggle',
+                order = 3,
                 name = 'Leveling Time & XP/Hour Text',
                 desc = 'Show an estimate of how long it takes to hit the next level',
                 width = "full",
@@ -79,6 +88,7 @@ function EasyExperienceBar:Options()
             },
             questRestedText = {
                 type = 'toggle',
+                order = 4,
                 name = 'Completed & Rested Text',
                 desc = 'Show how much rested XP and XP from completed quests the character has',
                 width = "full",
@@ -87,8 +97,14 @@ function EasyExperienceBar:Options()
                     then EasyExperienceBar.global.questRestedText = false
                     else EasyExperienceBar.global.questRestedText = true end end,
             },
+            header2 = {
+                type = 'header',
+                order = 5,
+                name = 'Settings',
+            },
             showMaxLevel = {
                 type = 'toggle',
+                order = 6,
                 name = 'Show Bar at Max Level',
                 desc = 'Do not hide the bar on max level characters',
                 width = "full",
@@ -99,6 +115,7 @@ function EasyExperienceBar:Options()
             },
             resetReload = {
                 type = 'toggle',
+                order = 7,
                 name = 'Reset Session Time and XP/Hour on Reload UI',
                 desc = 'Do not retain stats after a /reload',
                 width = "full",
@@ -109,6 +126,7 @@ function EasyExperienceBar:Options()
             },
             hideXPBar = {
                 type = 'toggle',
+                order = 8,
                 name = 'Hide Default Experience Bar',
                 desc = 'Hides the standard XP bar',
                 width = "full",
@@ -120,6 +138,27 @@ function EasyExperienceBar:Options()
                                             EasyExperienceBar.global.hideXpBar = true
                                          end
                                          EasyExperienceBar:ResetBar()
+                    end,
+            },
+            header3 = {
+                type = 'header',
+                order = 9,
+                name = 'Display',
+                hidden = function() return select(4, _G.GetBuildInfo()) < 100000 end,
+            },
+             lockBar = {
+                type = 'toggle',
+                order = 9,
+                name = 'Lock Bar',
+                desc = 'Disables the click and drag to move function',
+                width = "full",
+                hidden = function() return select(4, _G.GetBuildInfo()) < 100000 end,
+                get = function(info)  return EasyExperienceBar.global.lockBar end,
+                set = function(info,val) if EasyExperienceBar.global.lockBar then
+                                            EasyExperienceBar.global.lockBar = false
+                                         else
+                                            EasyExperienceBar.global.lockBar = true
+                                         end
                     end,
             },
         },
@@ -265,7 +304,7 @@ function EasyExperienceBar:OnInitialize()
     end
 
     EasyExperienceBar.MainFrame:SetScript("OnMouseDown", function(this, button)
-        if button == "LeftButton" then
+        if button == "LeftButton" and not EasyExperienceBar.global.lockBar then
             this:StartMoving()
         end
     end)
