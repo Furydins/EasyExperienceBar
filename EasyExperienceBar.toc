@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 110205,110207,120000
 ## Title: Easy Experience Bar
 ## Notes: Experience Tracking Bar
 ## Author: FurydinWow

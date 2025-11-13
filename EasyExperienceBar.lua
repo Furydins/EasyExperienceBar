@@ -336,7 +336,7 @@ function EasyExperienceBar:CreateProgressBar(parent)
     progressBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
     progressBar:SetSize(600, 30)
 
-    local texture = _G.UIParent:CreateTexture()
+    local texture = progressBar:CreateTexture()
     texture:SetPoint("CENTER")
     texture:SetTexture("Interface/TargetingFrame/UI-StatusBar")
 
