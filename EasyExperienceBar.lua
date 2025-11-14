@@ -33,7 +33,6 @@ EasyExperienceBar.UpdateTimer = nil
 EasyExperienceBar.options = {}
 function EasyExperienceBar:Options()
 
-    EasyExperienceBar.global = EasyExperienceBar.sessionDB.global
     if EasyExperienceBar.global.levelTimeText == nil then  EasyExperienceBar.global.levelTimeText = true end
     if EasyExperienceBar.global.sessionTimeText == nil then  EasyExperienceBar.global.sessionTimeText = true end
     if EasyExperienceBar.global.showXpHourText == nil then  EasyExperienceBar.global.showXpHourText = true end
@@ -42,6 +41,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.resetReload == nil then EasyExperienceBar.global.resetReload = false end
     if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
     if EasyExperienceBar.global.lockBar == nil then EasyExperienceBar.global.lockBar = false end
+    if EasyExperienceBar.global.barSize == nil then EasyExperienceBar.global.barSize = 1.0 end
 
     local options = {
         name = "Easy Experience Bar",
@@ -144,7 +144,6 @@ function EasyExperienceBar:Options()
                 type = 'header',
                 order = 9,
                 name = 'Display',
-                hidden = function() return select(4, _G.GetBuildInfo()) < 100000 end,
             },
              lockBar = {
                 type = 'toggle',
@@ -152,7 +151,6 @@ function EasyExperienceBar:Options()
                 name = 'Lock Bar',
                 desc = 'Disables the click and drag to move function',
                 width = "full",
-                hidden = function() return select(4, _G.GetBuildInfo()) < 100000 end,
                 get = function(info)  return EasyExperienceBar.global.lockBar end,
                 set = function(info,val) if EasyExperienceBar.global.lockBar then
                                             EasyExperienceBar.global.lockBar = false
@@ -160,6 +158,20 @@ function EasyExperienceBar:Options()
                                             EasyExperienceBar.global.lockBar = true
                                          end
                     end,
+            },
+            sizer = {
+                type = 'range',
+                order = 10,
+                name = 'Size',
+                desc = 'Adjust bar size',
+                min  = 0.75,
+                max  = 1.0, 
+                step = 0.25,
+                width = "full",
+                get = function(info)  return EasyExperienceBar.global.barSize end,
+                set = function(info,val) EasyExperienceBar.global.barSize = val 
+                                         EasyExperienceBar:Resize(val) 
+                                         end,
             },
         },
     }
@@ -243,7 +255,6 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
 end
 
 function EasyExperienceBar:OnInitialize()
-
     -- Saved Variables
     EasyExperienceBar.sessionDB = _G.LibStub("AceDB-3.0"):New("EasyExperienceDB")
     EasyExperienceBar.session = EasyExperienceBar.sessionDB.char
@@ -262,42 +273,45 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.session.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
     EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
 
+    EasyExperienceBar.global = EasyExperienceBar.sessionDB.global
+    
+    EasyExperienceBar:Options()
+
+    local scale =  EasyExperienceBar.global.barSize
 
     EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "EasyExperienceBar.MainFrame", _G.UIParent,
                   _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
     EasyExperienceBar.MainFrame:SetPoint("TOP", _G.UIParent, -7, -70)
     EasyExperienceBar.MainFrame:SetFrameStrata("BACKGROUND")
-    EasyExperienceBar.MainFrame:SetSize(600, 30)
+    EasyExperienceBar.MainFrame:SetSize(600 * scale, 30 * scale)
     EasyExperienceBar.MainFrame:SetMovable(true)
 
-    EasyExperienceBar.BackgroundBar = EasyExperienceBar:CreateBackgroundBar(EasyExperienceBar.MainFrame)
+    EasyExperienceBar.BackgroundBar = EasyExperienceBar:CreateBackgroundBar(EasyExperienceBar.MainFrame, scale)
     EasyExperienceBar.BackgroundBar:SetValue(100)
     EasyExperienceBar.BackgroundBar:SetFrameLevel(10)
     EasyExperienceBar.BackgroundBar:Show()
 
-    EasyExperienceBar.RestedBar = EasyExperienceBar:CreateRestedBar(EasyExperienceBar.MainFrame)
+    EasyExperienceBar.RestedBar = EasyExperienceBar:CreateRestedBar(EasyExperienceBar.MainFrame, scale)
     EasyExperienceBar.RestedBar:SetValue(0)
     EasyExperienceBar.RestedBar:SetFrameLevel(20)
     EasyExperienceBar.RestedBar:Show()
 
-    EasyExperienceBar.QuestBar = EasyExperienceBar:CreateQuestBar(EasyExperienceBar.MainFrame)
+    EasyExperienceBar.QuestBar = EasyExperienceBar:CreateQuestBar(EasyExperienceBar.MainFrame, scale)
     EasyExperienceBar.QuestBar:SetValue(100)
     EasyExperienceBar.QuestBar:SetFrameLevel(30)
     EasyExperienceBar.QuestBar:Show()
 
-    EasyExperienceBar.ProgressBar = EasyExperienceBar:CreateProgressBar(EasyExperienceBar.MainFrame)
+    EasyExperienceBar.ProgressBar = EasyExperienceBar:CreateProgressBar(EasyExperienceBar.MainFrame, scale)
     EasyExperienceBar.ProgressBar:SetValue(50)
     EasyExperienceBar.ProgressBar:SetFrameLevel(40)
     EasyExperienceBar.ProgressBar:Show()
 
-    EasyExperienceBar.Texts = EasyExperienceBar:CreateTexts(EasyExperienceBar.ProgressBar)
+    EasyExperienceBar.Texts = EasyExperienceBar:CreateTexts(EasyExperienceBar.ProgressBar, scale)
 
     if not EasyExperienceBar.isMaxLevel then
         EasyExperienceBar:CreateTimer()
     end
     EasyExperienceBar:RegisterEvents()
-
-    EasyExperienceBar:Options()
 
     if EasyExperienceBar.global.hideXpBar and _G.StatusTrackingBarManager then
         _G.StatusTrackingBarManager:Hide()
@@ -330,11 +344,11 @@ function EasyExperienceBar:RegisterEvents()
     EasyExperienceBar.MainFrame:SetScript("OnEvent", EasyExperienceBar.EventHandler)
 end
 
-function EasyExperienceBar:CreateProgressBar(parent)
+function EasyExperienceBar:CreateProgressBar(parent, scale)
     local progressBar = _G.CreateFrame("StatusBar", nil, EasyExperienceBar.MainFrame,
                 _G.BackdropTemplateMixin and "BackdropTemplate")
     progressBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
-    progressBar:SetSize(600, 30)
+    progressBar:SetSize(600 * scale, 30 * scale)
 
     local texture = progressBar:CreateTexture()
     texture:SetPoint("CENTER")
@@ -350,11 +364,11 @@ function EasyExperienceBar:CreateProgressBar(parent)
     return progressBar
 end
 
-function EasyExperienceBar:CreateBackgroundBar(parent)
+function EasyExperienceBar:CreateBackgroundBar(parent, scale)
     local backgroundBar = _G.CreateFrame("StatusBar", nil, EasyExperienceBar.MainFrame,
              _G.BackdropTemplateMixin and "BackdropTemplate")
     backgroundBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
-    backgroundBar:SetSize(600, 30)
+    backgroundBar:SetSize(600 * scale, 30 * scale)
 
     backgroundBar:SetStatusBarTexture("Interface/Buttons/WHITE8X8")
     backgroundBar:SetStatusBarColor(0, 0, 0, 0.5)
@@ -363,11 +377,11 @@ function EasyExperienceBar:CreateBackgroundBar(parent)
     return backgroundBar
 end
 
-function EasyExperienceBar:CreateRestedBar(parent)
+function EasyExperienceBar:CreateRestedBar(parent, scale)
     local restedBar = _G.CreateFrame("StatusBar", nil, EasyExperienceBar.MainFrame,
                 _G.BackdropTemplateMixin and "BackdropTemplate")
     restedBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
-    restedBar:SetSize(600, 30)
+    restedBar:SetSize(600 * scale, 30 * scale)
 
     restedBar:SetStatusBarTexture("Interface/Buttons/WHITE8X8")
     restedBar:SetStatusBarColor(0.309, 0.562, 1.0, 0.5)
@@ -376,11 +390,11 @@ function EasyExperienceBar:CreateRestedBar(parent)
     return restedBar
 end
 
-function EasyExperienceBar:CreateQuestBar(parent)
+function EasyExperienceBar:CreateQuestBar(parent, scale)
     local questBar = _G.CreateFrame("StatusBar", nil, EasyExperienceBar.MainFrame,
                 _G.BackdropTemplateMixin and "BackdropTemplate")
     questBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
-    questBar:SetSize(600, 30)
+    questBar:SetSize(600 * scale, 30 * scale)
 
     questBar:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
     questBar:SetStatusBarColor(1.0, 0.589, 0.0, 1)
@@ -389,10 +403,10 @@ function EasyExperienceBar:CreateQuestBar(parent)
     return questBar
 end
 
- function EasyExperienceBar:CreateTexts(frame)
+ function EasyExperienceBar:CreateTexts(frame, scale)
     local levelText = frame:CreateFontString()
     levelText:SetPoint("LEFT", frame, "LEFT" , 5, 0)
-    levelText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
+    levelText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
     levelText:SetWidth(100)
     levelText:SetJustifyH("LEFT")
     levelText:SetTextColor(1,1,1)
@@ -400,7 +414,7 @@ end
 
     local progressText = frame:CreateFontString()
     progressText:SetPoint("CENTER", frame, "CENTER" , 0, 0)
-    progressText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
+    progressText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
     progressText:SetWidth(350)
     progressText:SetJustifyH("CENTER")
     progressText:SetTextColor(1,1,1)
@@ -408,35 +422,35 @@ end
 
     local percentText = frame:CreateFontString()
     percentText:SetPoint("RIGHT", frame, "RIGHT" , -5, 0)
-    percentText:SetFont([[Fonts\FRIZQT__.TTF]], 14, "THICKOUTLINE")
+    percentText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
     percentText:SetJustifyH("RIGHT")
     percentText:SetWidth(150)
     percentText:SetText("Percent Test")
 
     local levelTimeText = frame:CreateFontString()
     levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 15)
-    levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
     levelTimeText:SetWidth(300)
     levelTimeText:SetJustifyH("LEFT")
     levelTimeText:SetText("Level Time")
 
     local sessionTimeText = frame:CreateFontString()
     sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 15)
-    sessionTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    sessionTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
     sessionTimeText:SetJustifyH("RIGHT")
     sessionTimeText:SetWidth(300)
     sessionTimeText:SetText("Session Time")
 
     local timeToLevelText = frame:CreateFontString()
     timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
-    timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
     timeToLevelText:SetWidth(300)
     timeToLevelText:SetJustifyH("LEFT")
     timeToLevelText:SetText("Time To Level")
 
     local statText = frame:CreateFontString()
     statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -20)
-    statText:SetFont([[Fonts\FRIZQT__.TTF]], 13, "THICKOUTLINE")
+    statText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
     statText:SetJustifyH("RIGHT")
     statText:SetWidth(280)
     statText:SetText("Stats")
@@ -450,6 +464,21 @@ end
              timeToLevelText = timeToLevelText,
              statText = statText, }
  end
+
+function EasyExperienceBar:Resize(scale)
+
+    EasyExperienceBar.MainFrame:SetSize(600 * scale, 30 * scale)
+    EasyExperienceBar.ProgressBar:SetSize(600 * scale, 30 * scale)
+    EasyExperienceBar.BackgroundBar:SetSize(600 * scale, 30 * scale)
+    EasyExperienceBar.RestedBar:SetSize(600 * scale, 30 * scale)
+    EasyExperienceBar.QuestBar:SetSize(600 * scale, 30 * scale)
+    EasyExperienceBar.Texts.levelText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.progressText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.sessionTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.statText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+end
 
  function EasyExperienceBar:Update()
      local show = not EasyExperienceBar.isPlayerMaxLevel or EasyExperienceBar.global.showMaxLevel
