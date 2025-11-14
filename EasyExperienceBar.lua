@@ -444,9 +444,10 @@ end
     local timeToLevelText = frame:CreateFontString()
     timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
     timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
-    timeToLevelText:SetWidth(300)
+    timeToLevelText:SetWidth(320)
     timeToLevelText:SetJustifyH("LEFT")
     timeToLevelText:SetText("Time To Level")
+    timeToLevelText:SetWordWrap(false)
 
     local statText = frame:CreateFontString()
     statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -20)
