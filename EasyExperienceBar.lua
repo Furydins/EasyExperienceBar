@@ -164,9 +164,9 @@ function EasyExperienceBar:Options()
                 order = 10,
                 name = 'Size',
                 desc = 'Adjust bar size',
-                min  = 0.75,
+                min  = 0.5,
                 max  = 1.0, 
-                step = 0.25,
+                step = 0.05,
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.barSize end,
                 set = function(info,val) EasyExperienceBar.global.barSize = val 
