@@ -4,6 +4,7 @@
 
 EasyExperienceBar = _G.LibStub("AceAddon-3.0"):NewAddon("EasyExperienceBar", "AceConsole-3.0")
 EasyExperienceBar.AceGUI = _G.LibStub("AceGUI-3.0")
+EasyExperienceBar.LSM = _G.LibStub("LibSharedMedia-3.0")
 EasyExperienceBar.MainFrame = nil
 EasyExperienceBar.ProgressBar = nil
 
@@ -42,6 +43,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
     if EasyExperienceBar.global.lockBar == nil then EasyExperienceBar.global.lockBar = false end
     if EasyExperienceBar.global.barSize == nil then EasyExperienceBar.global.barSize = 1.0 end
+    if EasyExperienceBar.global.font == nil then EasyExperienceBar.global.font = "[[Fonts\FRIZQT__.TTF]]" end
 
     local options = {
         name = "Easy Experience Bar",
@@ -172,6 +174,28 @@ function EasyExperienceBar:Options()
                 set = function(info,val) EasyExperienceBar.global.barSize = val 
                                          EasyExperienceBar:Resize(val) 
                                          end,
+            },
+            font = {
+                type = 'select',
+                order = 11,
+                name = 'Font',
+                desc = 'Font Selector',
+                dialogControl = 'LSM30_Font',
+                values = EasyExperienceBar.LSM:HashTable("font"),
+                width = "normal",
+                get = function(info) local values = {}
+                    local list = EasyExperienceBar.LSM:List("font")
+                    local hashtable = EasyExperienceBar.LSM:HashTable("font")
+                    for i,handle in ipairs(list) do
+                        values[hashtable[handle]] = handle
+                    end
+                    local hash = values[EasyExperienceBar.global.font]
+                    return hash end,
+                set = function(info,val)
+                    local hashtable = EasyExperienceBar.LSM:HashTable("font")
+                    EasyExperienceBar.global.font = hashtable[val]
+                    EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
+                    end
             },
         },
     }
@@ -406,7 +430,7 @@ end
  function EasyExperienceBar:CreateTexts(frame, scale)
     local levelText = frame:CreateFontString()
     levelText:SetPoint("LEFT", frame, "LEFT" , 5, 0)
-    levelText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
+    levelText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     levelText:SetWidth(100)
     levelText:SetJustifyH("LEFT")
     levelText:SetTextColor(1,1,1)
@@ -414,7 +438,7 @@ end
 
     local progressText = frame:CreateFontString()
     progressText:SetPoint("CENTER", frame, "CENTER" , 0, 0)
-    progressText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
+    progressText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     progressText:SetWidth(350)
     progressText:SetJustifyH("CENTER")
     progressText:SetTextColor(1,1,1)
@@ -422,28 +446,28 @@ end
 
     local percentText = frame:CreateFontString()
     percentText:SetPoint("RIGHT", frame, "RIGHT" , -5, 0)
-    percentText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
+    percentText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     percentText:SetJustifyH("RIGHT")
     percentText:SetWidth(150)
     percentText:SetText("Percent Test")
 
     local levelTimeText = frame:CreateFontString()
     levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 15)
-    levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    levelTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     levelTimeText:SetWidth(300)
     levelTimeText:SetJustifyH("LEFT")
     levelTimeText:SetText("Level Time")
 
     local sessionTimeText = frame:CreateFontString()
     sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 15)
-    sessionTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    sessionTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     sessionTimeText:SetJustifyH("RIGHT")
     sessionTimeText:SetWidth(300)
     sessionTimeText:SetText("Session Time")
 
     local timeToLevelText = frame:CreateFontString()
     timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
-    timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    timeToLevelText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     timeToLevelText:SetWidth(320)
     timeToLevelText:SetJustifyH("LEFT")
     timeToLevelText:SetText("Time To Level")
@@ -451,7 +475,7 @@ end
 
     local statText = frame:CreateFontString()
     statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -20)
-    statText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    statText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     statText:SetJustifyH("RIGHT")
     statText:SetWidth(280)
     statText:SetText("Stats")
@@ -473,12 +497,23 @@ function EasyExperienceBar:Resize(scale)
     EasyExperienceBar.BackgroundBar:SetSize(600 * scale, 30 * scale)
     EasyExperienceBar.RestedBar:SetSize(600 * scale, 30 * scale)
     EasyExperienceBar.QuestBar:SetSize(600 * scale, 30 * scale)
-    EasyExperienceBar.Texts.levelText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
-    EasyExperienceBar.Texts.progressText:SetFont([[Fonts\FRIZQT__.TTF]], 14 * scale, "THICKOUTLINE")
-    EasyExperienceBar.Texts.levelTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
-    EasyExperienceBar.Texts.sessionTimeText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
-    EasyExperienceBar.Texts.timeToLevelText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
-    EasyExperienceBar.Texts.statText:SetFont([[Fonts\FRIZQT__.TTF]], 13 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.levelText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.progressText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.levelTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.sessionTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.timeToLevelText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.statText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
+end
+
+
+function EasyExperienceBar:ChangeFont(font)
+    EasyExperienceBar:Print("Font Set" .. font)
+    EasyExperienceBar.Texts.levelText:SetFont(font, 14 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+    EasyExperienceBar.Texts.progressText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+    EasyExperienceBar.Texts.sessionTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+    EasyExperienceBar.Texts.timeToLevelText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+    EasyExperienceBar.Texts.statText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+
 end
 
  function EasyExperienceBar:Update()
