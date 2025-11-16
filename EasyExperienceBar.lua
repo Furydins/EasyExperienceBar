@@ -507,13 +507,13 @@ end
 
 
 function EasyExperienceBar:ChangeFont(font)
-    EasyExperienceBar:Print("Font Set" .. font)
-    EasyExperienceBar.Texts.levelText:SetFont(font, 14 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
-    EasyExperienceBar.Texts.progressText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
-    EasyExperienceBar.Texts.sessionTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
-    EasyExperienceBar.Texts.timeToLevelText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
-    EasyExperienceBar.Texts.statText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
-
+    if font then 
+        EasyExperienceBar.Texts.levelText:SetFont(font, 14 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+        EasyExperienceBar.Texts.progressText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+        EasyExperienceBar.Texts.sessionTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+        EasyExperienceBar.Texts.timeToLevelText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+        EasyExperienceBar.Texts.statText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+    end
 end
 
  function EasyExperienceBar:Update()
