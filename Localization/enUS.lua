@@ -1,0 +1,35 @@
+--localization file for english/United States
+local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "enUS", true)
+
+L["Easy Experience Bar"] = true
+L["Information"] = true
+L["Played Time Text"] = true
+L["Played Time Text"] = true
+L["Show Level time text"] = true
+L["Session Time Text"] = true
+L["Show current session time"] = true
+L["Leveling Time & XP/Hour Text"] = true
+L["Show an estimate of how long it takes to hit the next level"] = true
+L["Completed & Rested Text"] = true
+L["Show how much rested XP and XP from completed quests the character has"] = true
+L["Show Bar at Max Level"] = true
+L["Do not hide the bar on max level characters"] = true
+L["Reset Session Time and XP/Hour on Reload UI"] = true
+L["Do not retain stats after a /reload"] = true
+L["Hide Default Experience Bar"] = true
+L["Hides the standard XP bar"] = true
+L["Lock Bar"] = true
+L["Disables the click and drag to move function"] = true
+L["Size"] = true
+L["Adjust bar size"] = true
+L["Font"] = true
+L["Font Selector"] = true
+L["Level "] = true
+L["Max Level"] = true
+L["Leveling in:"]  = true
+L["XP/Hour"] = true
+L["Completed:"] = true
+L["Rested:"] = true
+L["Time played:"] = true
+L["Time this level:"] = true
+L["Time this session:"] = true

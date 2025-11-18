@@ -8,6 +8,8 @@ EasyExperienceBar.LSM = _G.LibStub("LibSharedMedia-3.0")
 EasyExperienceBar.MainFrame = nil
 EasyExperienceBar.ProgressBar = nil
 
+local L = LibStub("AceLocale-3.0"):GetLocale("EasyExperienceBar")
+
 function EasyExperienceBar:GetMaxLevel(exp)
     exp = exp or _G.GetExpansionLevel()
 
@@ -46,20 +48,20 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.font == nil then EasyExperienceBar.global.font = "[[Fonts\FRIZQT__.TTF]]" end
 
     local options = {
-        name = "Easy Experience Bar",
+        name = L["Easy Experience Bar"],
         handler = EasyExperienceBar.options,
         type = 'group',
         args = {
             header1 = {
                 type = 'header',
                 order = 0,
-                name = 'Information',
+                name = L["Information"],
             },
             levelTimeText = {
                 type = 'toggle',
                 order = 1,
-                name = 'Played Time Text',
-                desc = 'Show Level time text',
+                name = L["Played Time Text"],
+                desc = L["Show Level time text"],
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.levelTimeText end,
                 set = function(info,val) if EasyExperienceBar.global.levelTimeText
@@ -69,8 +71,8 @@ function EasyExperienceBar:Options()
              sessionTimeText = {
                 type = 'toggle',
                 order = 2,
-                name = 'Session Time Text',
-                desc = 'Show current session time',
+                name = L["Session Time Text"],
+                desc = L["Show current session time"],
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.sessionTimeText end,
                 set = function(info,val) if EasyExperienceBar.global.sessionTimeText
@@ -80,8 +82,8 @@ function EasyExperienceBar:Options()
             showXpHourText = {
                 type = 'toggle',
                 order = 3,
-                name = 'Leveling Time & XP/Hour Text',
-                desc = 'Show an estimate of how long it takes to hit the next level',
+                name = L["Leveling Time & XP/Hour Text"],
+                desc = L["Show an estimate of how long it takes to hit the next level"],
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.showXpHourText end,
                 set = function(info,val) if EasyExperienceBar.global.showXpHourText
@@ -91,8 +93,8 @@ function EasyExperienceBar:Options()
             questRestedText = {
                 type = 'toggle',
                 order = 4,
-                name = 'Completed & Rested Text',
-                desc = 'Show how much rested XP and XP from completed quests the character has',
+                name = L["Completed & Rested Text"],
+                desc = L["Show how much rested XP and XP from completed quests the character has"],
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.questRestedText end,
                 set = function(info,val) if EasyExperienceBar.global.questRestedText
@@ -107,8 +109,8 @@ function EasyExperienceBar:Options()
             showMaxLevel = {
                 type = 'toggle',
                 order = 6,
-                name = 'Show Bar at Max Level',
-                desc = 'Do not hide the bar on max level characters',
+                name = L["Show Bar at Max Level"],
+                desc = L["Do not hide the bar on max level characters"],
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.showMaxLevel end,
                 set = function(info,val) if EasyExperienceBar.global.showMaxLevel
@@ -118,8 +120,8 @@ function EasyExperienceBar:Options()
             resetReload = {
                 type = 'toggle',
                 order = 7,
-                name = 'Reset Session Time and XP/Hour on Reload UI',
-                desc = 'Do not retain stats after a /reload',
+                name = L["Reset Session Time and XP/Hour on Reload UI"],
+                desc = L["Do not retain stats after a /reload"],
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.resetReload end,
                 set = function(info,val) if EasyExperienceBar.global.resetReload
@@ -129,8 +131,8 @@ function EasyExperienceBar:Options()
             hideXPBar = {
                 type = 'toggle',
                 order = 8,
-                name = 'Hide Default Experience Bar',
-                desc = 'Hides the standard XP bar',
+                name = L["Hide Default Experience Bar"],
+                desc = L["Hides the standard XP bar"],
                 width = "full",
                 hidden = function() return select(4, _G.GetBuildInfo()) < 100000 end,
                 get = function(info)  return EasyExperienceBar.global.hideXpBar end,
@@ -150,8 +152,8 @@ function EasyExperienceBar:Options()
              lockBar = {
                 type = 'toggle',
                 order = 9,
-                name = 'Lock Bar',
-                desc = 'Disables the click and drag to move function',
+                name = L["Lock Bar"],
+                desc = L["Disables the click and drag to move function"],
                 width = "full",
                 get = function(info)  return EasyExperienceBar.global.lockBar end,
                 set = function(info,val) if EasyExperienceBar.global.lockBar then
@@ -164,8 +166,8 @@ function EasyExperienceBar:Options()
             sizer = {
                 type = 'range',
                 order = 10,
-                name = 'Size',
-                desc = 'Adjust bar size',
+                name = L["Size"],
+                desc = L["Adjust bar size"],
                 min  = 0.5,
                 max  = 1.0, 
                 step = 0.05,
@@ -178,8 +180,8 @@ function EasyExperienceBar:Options()
             font = {
                 type = 'select',
                 order = 11,
-                name = 'Font',
-                desc = 'Font Selector',
+                name = L["Font"],
+                desc = L["Font Selector"],
                 dialogControl = 'LSM30_Font',
                 values = EasyExperienceBar.LSM:HashTable("font"),
                 width = "normal",
@@ -723,7 +725,7 @@ function EasyExperienceBar:ClearTickerRTP()
 end
 
 EasyExperienceBar.customTexts = {
-    c1 = "Level " .. EasyExperienceBar.level,
+    c1 = L["Level "] .. EasyExperienceBar.level,
     c2 = "0 / 0 (0)",
     c3 = "0%",
     c4 = "",
@@ -740,7 +742,7 @@ function EasyExperienceBar:UpdateCustomTexts(state)
     c1 = "Level " .. (s.level or _G.UnitLevel("player"))
 
     if isMaxLevel then
-        c2 = "Max Level"
+        c2 = L["Max Level"]
     else
         c2 = string.format("%s / %s (%s)", _G.FormatLargeNumber(s.currentXP or 0),
             _G.FormatLargeNumber(s.totalXP or 0), _G.FormatLargeNumber(s.remainingXP or 0))
@@ -754,27 +756,27 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         if EasyExperienceBar.global.showXpHourText then
             local hourlyXP = s.hourlyXP or 0
 
-            c4 = string.format("Leveling in: %s (%s%s XP/Hour)", s.timeToLevelText or "",
+            c4 = string.format(L["Leveling in:"] .. " %s (%s%s " .. L["XP/Hour"] .. ")", s.timeToLevelText or "",
                hourlyXP > 10000 and EasyExperienceBar:round(hourlyXP / 1000, 1) or
                _G.FormatLargeNumber(hourlyXP), hourlyXP > 10000 and "K" or "")
         end
 
         if EasyExperienceBar.global.questRestedText then
-            c5 = string.format("Completed: |cFFFF9700%s%%|r - Rested: |cFF4F90FF%s%%|r",
+            c5 = string.format(L["Completed:"] .. " |cFFFF9700%s%%|r - " .. L["Rested:"] .. " |cFF4F90FF%s%%|r",
                EasyExperienceBar:round(s.percentcomplete or 0, 1), EasyExperienceBar:round(s.percentrested or 0, 1))
         end
     end
 
     if EasyExperienceBar.global.levelTimeText then
         if isMaxLevel then
-            c6 = "Time played: " .. (s.totalTimeText or "")
+            c6 = L["Time played:"] .. " " .. (s.totalTimeText or "")
         else
-            c6 = "Time this level: " .. (s.levelTimeText or "")
+            c6 = L["Time this level:"] .. " " .. (s.levelTimeText or "")
         end
     end
 
     if EasyExperienceBar.global.sessionTimeText then
-        c7 = "Time this session: " .. (s.sessionTimeText or "")
+        c7 = L["Time this session:"] .. " " .. (s.sessionTimeText or "")
     end
 
     EasyExperienceBar.customTexts = {
