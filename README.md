@@ -1,2 +1,17 @@
 # EasyExperienceBar
-Prominent on screen experience bar which includes tracking for rested XP and basic levelling stats
+
+This is a port of the orginal Luxthos Experience Bar Weak Aura now converted to a regular World fo Warcrfat addon to enable it to continue to support World of Warcraft: Midnight and beyond.
+
+## Features:
+
+- Supports All flavours of classic and retail (including the Midnight Beta)
+- Tracks Xp and Rested XP
+- Optionally tracks completed quest XP
+- Tracks Session and Level time
+- Predicts Time to Level
+
+## Credits
+- Visual Design: Luxthos
+- Original Coding: Deamoose
+
+
