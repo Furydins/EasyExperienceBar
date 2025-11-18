@@ -1,0 +1,4 @@
+- Initial Release
+- Support for Classic, Mists of Pandaria Classic, The War Within and Midnight
+- Localization Support
+- Customization Support
