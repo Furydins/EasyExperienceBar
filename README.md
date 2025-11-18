@@ -14,4 +14,7 @@ This is a port of the orginal Luxthos Experience Bar Weak Aura now converted to 
 - Visual Design: Luxthos
 - Original Coding: Deamoose
 
+<img width="834" height="154" alt="image" src="https://github.com/user-attachments/assets/b3177ac8-de18-4146-a52a-58f415caf7b5" />
+
+
 
