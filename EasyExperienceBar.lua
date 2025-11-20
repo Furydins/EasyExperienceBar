@@ -45,7 +45,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
     if EasyExperienceBar.global.lockBar == nil then EasyExperienceBar.global.lockBar = false end
     if EasyExperienceBar.global.barSize == nil then EasyExperienceBar.global.barSize = 1.0 end
-    if EasyExperienceBar.global.font == nil then EasyExperienceBar.global.font = "[[Fonts\FRIZQT__.TTF]]" end
+    if EasyExperienceBar.global.font == nil then EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF" end
 
     local options = {
         name = L["Easy Experience Bar"],
@@ -430,7 +430,7 @@ function EasyExperienceBar:CreateQuestBar(parent, scale)
 end
 
  function EasyExperienceBar:CreateTexts(frame, scale)
-    local levelText = frame:CreateFontString()
+    local levelText = frame:CreateFontString(nil, nil, "GameTooltipText")
     levelText:SetPoint("LEFT", frame, "LEFT" , 5, 0)
     levelText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     levelText:SetWidth(100)
@@ -438,7 +438,7 @@ end
     levelText:SetTextColor(1,1,1)
     levelText:SetText("Level Test")
 
-    local progressText = frame:CreateFontString()
+    local progressText = frame:CreateFontString(nil, nil, "GameTooltipText")
     progressText:SetPoint("CENTER", frame, "CENTER" , 0, 0)
     progressText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     progressText:SetWidth(350)
@@ -446,28 +446,28 @@ end
     progressText:SetTextColor(1,1,1)
     progressText:SetText("Progress Test")
 
-    local percentText = frame:CreateFontString()
+    local percentText = frame:CreateFontString(nil, nil, "GameTooltipText")
     percentText:SetPoint("RIGHT", frame, "RIGHT" , -5, 0)
     percentText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     percentText:SetJustifyH("RIGHT")
     percentText:SetWidth(150)
     percentText:SetText("Percent Test")
 
-    local levelTimeText = frame:CreateFontString()
+    local levelTimeText = frame:CreateFontString(nil, nil, "GameTooltipText")
     levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 15)
     levelTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     levelTimeText:SetWidth(300)
     levelTimeText:SetJustifyH("LEFT")
     levelTimeText:SetText("Level Time")
 
-    local sessionTimeText = frame:CreateFontString()
+    local sessionTimeText = frame:CreateFontString(nil, nil, "GameTooltipText")
     sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 15)
     sessionTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     sessionTimeText:SetJustifyH("RIGHT")
     sessionTimeText:SetWidth(300)
     sessionTimeText:SetText("Session Time")
 
-    local timeToLevelText = frame:CreateFontString()
+    local timeToLevelText = frame:CreateFontString(nil, nil, "GameTooltipText")
     timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
     timeToLevelText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     timeToLevelText:SetWidth(320)
@@ -475,7 +475,7 @@ end
     timeToLevelText:SetText("Time To Level")
     timeToLevelText:SetWordWrap(false)
 
-    local statText = frame:CreateFontString()
+    local statText = frame:CreateFontString(nil, nil, "GameTooltipText")
     statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -20)
     statText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     statText:SetJustifyH("RIGHT")
@@ -501,6 +501,7 @@ function EasyExperienceBar:Resize(scale)
     EasyExperienceBar.QuestBar:SetSize(600 * scale, 30 * scale)
     EasyExperienceBar.Texts.levelText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     EasyExperienceBar.Texts.progressText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
+    EasyExperienceBar.Texts.percentText:SetFont(EasyExperienceBar.global.font, 14 * scale, "THICKOUTLINE")
     EasyExperienceBar.Texts.levelTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     EasyExperienceBar.Texts.sessionTimeText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
     EasyExperienceBar.Texts.timeToLevelText:SetFont(EasyExperienceBar.global.font, 13 * scale, "THICKOUTLINE")
@@ -512,6 +513,8 @@ function EasyExperienceBar:ChangeFont(font)
     if font then 
         EasyExperienceBar.Texts.levelText:SetFont(font, 14 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
         EasyExperienceBar.Texts.progressText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+        EasyExperienceBar.Texts.percentText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+        EasyExperienceBar.Texts.levelTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
         EasyExperienceBar.Texts.sessionTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
         EasyExperienceBar.Texts.timeToLevelText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
         EasyExperienceBar.Texts.statText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
@@ -540,7 +543,7 @@ end
     end
  end
 
-function EasyExperienceBar:UpdateTexts()
+function EasyExperienceBar:UpdateTexts()   
     local textDisplays = EasyExperienceBar.Texts
     local textValues = EasyExperienceBar.customTexts
 
