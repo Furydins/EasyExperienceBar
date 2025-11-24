@@ -11,7 +11,7 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
-Libraries\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Lib\CallbackHandler-1.0\CallbackHandler-1.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
 
 Localization\Locales.xml
