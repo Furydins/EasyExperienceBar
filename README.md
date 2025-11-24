@@ -5,14 +5,14 @@ This is a port of the orginal Luxthos Experience Bar Weak Aura now converted to 
 ## Features:
 
 - Supports All flavours of classic and retail (including the Midnight Beta)
-- Tracks Xp and Rested XP
+- Tracks XP and Rested XP
 - Optionally tracks completed quest XP
 - Tracks Session and Level time
 - Predicts Time to Level
 
 ## Credits
 - Visual Design: Luxthos
-- Original Coding: Deamoose
+- Original Coding: Deamoos
 
 <img width="834" height="154" alt="image" src="https://github.com/user-attachments/assets/b3177ac8-de18-4146-a52a-58f415caf7b5" />
 
