@@ -134,7 +134,7 @@ function EasyExperienceBar:Options()
                 name = L["Hide Default Experience Bar"],
                 desc = L["Hides the standard XP bar"],
                 width = "full",
-                hidden = function() return select(4, _G.GetBuildInfo()) < 100000 end,
+                hidden = function() return not _G.StatusTrackingBarManager end,
                 get = function(info)  return EasyExperienceBar.global.hideXpBar end,
                 set = function(info,val) if EasyExperienceBar.global.hideXpBar then
                                             EasyExperienceBar.global.hideXpBar = false
