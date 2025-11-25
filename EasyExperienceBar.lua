@@ -4,6 +4,8 @@
 
 EasyExperienceBar = _G.LibStub("AceAddon-3.0"):NewAddon("EasyExperienceBar", "AceConsole-3.0")
 EasyExperienceBar.AceGUI = _G.LibStub("AceGUI-3.0")
+EasyExperienceBar.AceConfig = _G.LibStub("AceConfig-3.0")
+EasyExperienceBar.AceConfigDialog = _G.LibStub("AceConfigDialog-3.0")
 EasyExperienceBar.LSM = _G.LibStub("LibSharedMedia-3.0")
 EasyExperienceBar.MainFrame = nil
 EasyExperienceBar.ProgressBar = nil
@@ -47,6 +49,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.lockBar == nil then EasyExperienceBar.global.lockBar = false end
     if EasyExperienceBar.global.barSize == nil then EasyExperienceBar.global.barSize = 1.0 end
     if EasyExperienceBar.global.font == nil then EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF" end
+    if EasyExperienceBar.global.bartexture == nil then EasyExperienceBar.global.bartexture = "Interface\\TargetingFrame\\UI-StatusBar" end
 
     local options = {
         name = L["Easy Experience Bar"],
@@ -200,10 +203,32 @@ function EasyExperienceBar:Options()
                     EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
                     end
             },
+            textures = {
+                type = 'select',
+                order = 12,
+                name = L["Bar Texture"],
+                desc = L["Selects the texture used for the bars"],
+                dialogControl = 'LSM30_Statusbar',
+                values = EasyExperienceBar.LSM:HashTable("statusbar"),
+                width = "normal",
+                 get = function(info) local values = {}
+                    local list = EasyExperienceBar.LSM:List("statusbar")
+                    local hashtable = EasyExperienceBar.LSM:HashTable("statusbar")
+                    for i,handle in ipairs(list) do
+                        values[hashtable[handle]] = handle
+                    end
+                    local hash = values[EasyExperienceBar.global.bartexture]
+                    return hash end,
+                set = function(info,val)
+                    local hashtable = EasyExperienceBar.LSM:HashTable("statusbar")
+                    EasyExperienceBar.global.bartexture = hashtable[val]
+                    EasyExperienceBar:ChangeTexture(EasyExperienceBar.global.bartexture)
+                    end,
+            },
         },
     }
-    _G.LibStub("AceConfig-3.0"):RegisterOptionsTable("EasyExperienceBar", options)
-    _G.LibStub("AceConfigDialog-3.0"):AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
+    EasyExperienceBar.AceConfig:RegisterOptionsTable("EasyExperienceBar", options)
+    EasyExperienceBar.AceConfigDialog:AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
 end
 
 function EasyExperienceBar:ResetBar()
@@ -379,7 +404,7 @@ function EasyExperienceBar:CreateProgressBar(parent, scale)
 
     local texture = progressBar:CreateTexture()
     texture:SetPoint("CENTER")
-    texture:SetTexture("Interface/TargetingFrame/UI-StatusBar")
+    texture:SetTexture(EasyExperienceBar.global.bartexture)
 
     local tstart = _G.CreateColor(0.335, 0.388, 1.0)
     local tend = _G.CreateColor(0.773, 0.380, 1.0)
@@ -423,7 +448,7 @@ function EasyExperienceBar:CreateQuestBar(parent, scale)
     questBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
     questBar:SetSize(600 * scale, 30 * scale)
 
-    questBar:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
+    questBar:SetStatusBarTexture(EasyExperienceBar.global.bartexture)
     questBar:SetStatusBarColor(1.0, 0.589, 0.0, 1)
     questBar:SetMinMaxValues(0, 100)
     questBar:SetValue(100)
@@ -519,6 +544,26 @@ function EasyExperienceBar:ChangeFont(font)
         EasyExperienceBar.Texts.sessionTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
         EasyExperienceBar.Texts.timeToLevelText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
         EasyExperienceBar.Texts.statText:SetFont(font, 13 * EasyExperienceBar.global.barSize, "THICKOUTLINE")
+    end
+end
+
+function EasyExperienceBar:ChangeTexture(bartexture)
+    if bartexture then
+        local texture = EasyExperienceBar.ProgressBar:CreateTexture()
+        texture:SetPoint("CENTER")
+        texture:SetTexture(EasyExperienceBar.global.bartexture)
+        local tstart = _G.CreateColor(0.335, 0.388, 1.0)
+        local tend = _G.CreateColor(0.773, 0.380, 1.0)
+        texture:SetGradient("HORIZONTAL", tstart, tend)
+        EasyExperienceBar.ProgressBar:SetStatusBarTexture(texture)
+
+        texture = EasyExperienceBar.QuestBar:CreateTexture()
+        texture:SetPoint("CENTER")
+        texture:SetTexture(EasyExperienceBar.global.bartexture)
+         local tstart = _G.CreateColor(1.0, 0.589, 0.0, 1)
+        local tend = _G.CreateColor(1.0, 0.589, 0.0, 1)
+        texture:SetGradient("HORIZONTAL", tstart, tend)
+        EasyExperienceBar.QuestBar:SetStatusBarTexture(texture)
     end
 end
 
