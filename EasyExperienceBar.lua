@@ -7,6 +7,7 @@ EasyExperienceBar.AceGUI = _G.LibStub("AceGUI-3.0")
 EasyExperienceBar.LSM = _G.LibStub("LibSharedMedia-3.0")
 EasyExperienceBar.MainFrame = nil
 EasyExperienceBar.ProgressBar = nil
+EasyExperienceBar.sessionTime = 0
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EasyExperienceBar")
 
