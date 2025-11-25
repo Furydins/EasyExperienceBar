@@ -2,7 +2,7 @@
 ## Title: Easy Experience Bar
 ## Notes: Experience Tracking Bar
 ## Author: FurydinWow
-## Version: 0.1
+## Version: 2025.11.25.A
 ## SavedVariables: EasyExperienceDB
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
