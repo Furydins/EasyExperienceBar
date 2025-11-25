@@ -4,6 +4,8 @@
 
 EasyExperienceBar = _G.LibStub("AceAddon-3.0"):NewAddon("EasyExperienceBar", "AceConsole-3.0")
 EasyExperienceBar.AceGUI = _G.LibStub("AceGUI-3.0")
+EasyExperienceBar.AceConfig = _G.LibStub("AceConfig-3.0")
+EasyExperienceBar.AceConfigDialog = _G.LibStub("AceConfigDialog-3.0")
 EasyExperienceBar.LSM = _G.LibStub("LibSharedMedia-3.0")
 EasyExperienceBar.MainFrame = nil
 EasyExperienceBar.ProgressBar = nil
@@ -224,8 +226,8 @@ function EasyExperienceBar:Options()
             },
         },
     }
-    _G.LibStub("AceConfig-3.0"):RegisterOptionsTable("EasyExperienceBar", options)
-    _G.LibStub("AceConfigDialog-3.0"):AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
+    EasyExperienceBar.AceConfig:RegisterOptionsTable("EasyExperienceBar", options)
+    EasyExperienceBar.AceConfigDialog:AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
 end
 
 function EasyExperienceBar:ResetBar()
