@@ -30,6 +30,7 @@ end
 EasyExperienceBar.IsQuestComplete = _G.C_QuestLog.IsComplete or _G.IsQuestComplete
 EasyExperienceBar.QuestReadyForTurnIn = _G.C_QuestLog.ReadyForTurnIn or function() return false end
 EasyExperienceBar.SetSelectedQuest = _G.C_QuestLog.SetSelectedQuest or _G.SelectQuestLogEntry
+EasyExperienceBar.GetSelectedQuest = _G.C_QuestLog.GetSelectedQuest or _G.GetQuestLogSelection
 
 
 EasyExperienceBar.UpdateTimer = nil
@@ -693,23 +694,29 @@ function EasyExperienceBar:UpdateQuestXP()
     local incompleteXP = 0
     local questID, rewardXP
 
+    local currentQuestID = EasyExperienceBar.GetSelectedQuest()
+
     for i = 1, numQ do
-        EasyExperienceBar.SetSelectedQuest(i)
-        questID = EasyExperienceBar.GetQuestIDForLogIndex(i) 
+         EasyExperienceBar.SetSelectedQuest(i)
+         questID = EasyExperienceBar.GetQuestIDForLogIndex(i) 
 
-        if questID > 0 then
-            rewardXP = _G.GetQuestLogRewardXP(questID) or 0
+         if questID > 0 then
+             rewardXP = _G.GetQuestLogRewardXP(questID) or 0
 
-            if rewardXP > 0 then
+             if rewardXP > 0 then
                 questXP = questXP + rewardXP
 
-                if EasyExperienceBar.IsQuestComplete(questID) or EasyExperienceBar.QuestReadyForTurnIn(questID) then
-                    completeXP = completeXP + rewardXP
-                else
-                    incompleteXP = incompleteXP + rewardXP
-                end
-            end
-        end
+                 if EasyExperienceBar.IsQuestComplete(questID) or EasyExperienceBar.QuestReadyForTurnIn(questID) then
+                     completeXP = completeXP + rewardXP
+                 else
+                     incompleteXP = incompleteXP + rewardXP
+                 end
+             end
+         end
+    end
+
+    if currentQuestID then 
+        EasyExperienceBar.SetSelectedQuest(currentQuestID)
     end
 
     EasyExperienceBar.questXP = questXP
