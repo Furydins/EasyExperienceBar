@@ -44,7 +44,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.sessionTimeText == nil then  EasyExperienceBar.global.sessionTimeText = true end
     if EasyExperienceBar.global.showXpHourText == nil then  EasyExperienceBar.global.showXpHourText = true end
     if EasyExperienceBar.global.questRestedText == nil then  EasyExperienceBar.global.questRestedText = true end
-    if EasyExperienceBar.global.showMaxLevel == nil then EasyExperienceBar.global.showMaxLevel = true end
+    if EasyExperienceBar.global.showMaxLevel == nil then EasyExperienceBar.global.showMaxLevel = false end
     if EasyExperienceBar.global.resetReload == nil then EasyExperienceBar.global.resetReload = false end
     if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
     if EasyExperienceBar.global.lockBar == nil then EasyExperienceBar.global.lockBar = false end
