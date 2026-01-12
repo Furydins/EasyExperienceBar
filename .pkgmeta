@@ -1,15 +1,34 @@
 
 externals:
-  Libs/AceAddon-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceAddon-3.0
-  Libs/AceConfig-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceConfig-3.0
-  Libs/AceConsole-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceConsole-3.0
-  Libs/AceDB-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
-  Libs/AceGUI-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceGUI-3.0
-  Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.curseforge.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets/
-  Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
-  Libs/CallbackHandler-1.0: https://repos.curseforge.com/wow/ace3/trunk/CallbackHandler-1.0
-  Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk
-  Libs/LibStub: https://repos.curseforge.com/wow/ace3/trunk/LibStub
+  Libs/AceAddon-3.0: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/AceAddon-3.0
+    tag: latest
+  Libs/AceConfig-3.0: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/AceConfig-3.0
+    tag: latest
+  Libs/AceConsole-3.0: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/AceConsole-3.0
+    tag: latest
+  Libs/AceDB-3.0: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
+    tag: latest
+  Libs/AceGUI-3.0: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/AceGUI-3.0
+    tag: latest
+  Libs/AceGUI-3.0-SharedMediaWidgets: 
+    url: https://repos.curseforge.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets/
+    tag: latest
+  Libs/AceLocale-3.0: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
+    tag: latest
+  Libs/CallbackHandler-1.0: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/CallbackHandler-1.0
+    tag: latest
+  Libs/LibSharedMedia-3.0: 
+    url: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk
+  Libs/LibStub: 
+    url: https://repos.curseforge.com/wow/ace3/trunk/LibStub
+    tag: latest
 
 ignore:
  - README.md
