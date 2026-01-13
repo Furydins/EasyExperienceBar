@@ -44,6 +44,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.sessionTimeText == nil then  EasyExperienceBar.global.sessionTimeText = true end
     if EasyExperienceBar.global.showXpHourText == nil then  EasyExperienceBar.global.showXpHourText = true end
     if EasyExperienceBar.global.questRestedText == nil then  EasyExperienceBar.global.questRestedText = true end
+    if EasyExperienceBar.global.questXpBar == nil then EasyExperienceBar.global.questXpBar = true end
     if EasyExperienceBar.global.showMaxLevel == nil then EasyExperienceBar.global.showMaxLevel = false end
     if EasyExperienceBar.global.resetReload == nil then EasyExperienceBar.global.resetReload = false end
     if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
@@ -106,14 +107,25 @@ function EasyExperienceBar:Options()
                     then EasyExperienceBar.global.questRestedText = false
                     else EasyExperienceBar.global.questRestedText = true end end,
             },
+            questBar = {
+                type = 'toggle',
+                order = 5,
+                name = L["Completed Quest XP Bar"],
+                desc = L["Show a bar indicating how much XP is available from completed quests"],
+                width = "full",
+                get = function(info)  return EasyExperienceBar.global.questXpBar end,
+                set = function(info,val) if EasyExperienceBar.global.questXpBar
+                    then EasyExperienceBar.global.questXpBar = false
+                    else EasyExperienceBar.global.questXpBar = true end end,
+            },
             header2 = {
                 type = 'header',
-                order = 5,
+                order = 6,
                 name = 'Settings',
             },
             showMaxLevel = {
                 type = 'toggle',
-                order = 6,
+                order = 7,
                 name = L["Show Bar at Max Level"],
                 desc = L["Do not hide the bar on max level characters"],
                 width = "full",
@@ -124,7 +136,7 @@ function EasyExperienceBar:Options()
             },
             resetReload = {
                 type = 'toggle',
-                order = 7,
+                order = 8,
                 name = L["Reset Session Time and XP/Hour on Reload UI"],
                 desc = L["Do not retain stats after a /reload"],
                 width = "full",
@@ -135,7 +147,7 @@ function EasyExperienceBar:Options()
             },
             hideXPBar = {
                 type = 'toggle',
-                order = 8,
+                order = 9,
                 name = L["Hide Default Experience Bar"],
                 desc = L["Hides the standard XP bar"],
                 width = "full",
@@ -151,12 +163,12 @@ function EasyExperienceBar:Options()
             },
             header3 = {
                 type = 'header',
-                order = 9,
+                order = 10,
                 name = 'Display',
             },
              lockBar = {
                 type = 'toggle',
-                order = 9,
+                order = 11,
                 name = L["Lock Bar"],
                 desc = L["Disables the click and drag to move function"],
                 width = "full",
@@ -170,7 +182,7 @@ function EasyExperienceBar:Options()
             },
             sizer = {
                 type = 'range',
-                order = 10,
+                order = 12,
                 name = L["Size"],
                 desc = L["Adjust bar size"],
                 min  = 0.5,
@@ -184,7 +196,7 @@ function EasyExperienceBar:Options()
             },
             font = {
                 type = 'select',
-                order = 11,
+                order = 13,
                 name = L["Font"],
                 desc = L["Font Selector"],
                 dialogControl = 'LSM30_Font',
@@ -206,7 +218,7 @@ function EasyExperienceBar:Options()
             },
             textures = {
                 type = 'select',
-                order = 12,
+                order = 14,
                 name = L["Bar Texture"],
                 desc = L["Selects the texture used for the bars"],
                 dialogControl = 'LSM30_Statusbar',
@@ -677,10 +689,14 @@ function EasyExperienceBar:CalculateValues()
         totalpercentcomplete = totalXP > 0 and (((completeXP + currentXP) / totalXP) * 100) or 0,
     }
 
+    local questXP = 0
+    if EasyExperienceBar.global.questXpBar  then
+        questXP = allstates.percentcomplete
+    end
     EasyExperienceBar.ProgressBar:SetValue(allstates.percentXP)
-    EasyExperienceBar.QuestBar:SetValue(min(allstates.percentXP + allstates.percentcomplete, 100))
+    EasyExperienceBar.QuestBar:SetValue(min(allstates.percentXP + questXP, 100))
     EasyExperienceBar.RestedBar:SetValue(min(allstates.percentXP +
-         allstates.percentcomplete + allstates.percentrested, 100))
+         questXP + allstates.percentrested, 100))
 
     EasyExperienceBar:UpdateCustomTexts(allstates)
 
