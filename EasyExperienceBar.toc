@@ -1,4 +1,4 @@
-## Interface: 11508,20505,38000,50503,110207,120000
+## Interface: 11508,20505,38000,50503,120000,120001
 ## Title: Easy Experience Bar
 ## Notes: Experience Tracking Bar
 ## Author: FurydinWow
