@@ -568,8 +568,8 @@ end
 function EasyExperienceBar:ChangeFont(font)
     if font then 
         EasyExperienceBar.Texts.levelText:SetFont(font, 14 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.progressText:SetFont(font, 13 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.percentText:SetFont(font, 13 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
+        EasyExperienceBar.Texts.progressText:SetFont(font, 14 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
+        EasyExperienceBar.Texts.percentText:SetFont(font, 14 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
         EasyExperienceBar.Texts.levelTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
         EasyExperienceBar.Texts.sessionTimeText:SetFont(font, 13 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
         EasyExperienceBar.Texts.timeToLevelText:SetFont(font, 13 * EasyExperienceBar.global.barSize, EasyExperienceBar.global.fontOutline)
