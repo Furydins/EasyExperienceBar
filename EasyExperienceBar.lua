@@ -255,6 +255,20 @@ function EasyExperienceBar:Options()
                         EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
                     end,
             },
+            header4 = {
+                type = 'header',
+                order = 16,
+                name = 'Data',
+            },
+              resetGuide = {
+                order = 17,
+                type = "execute",
+                name = L["Reset Timers"],
+                desc = L["Resets Session and Level time"],
+                func =  function (info)
+                            EasyExperienceBar:ResetTimes()
+                        end
+            },
         },
     }
     EasyExperienceBar.AceConfig:RegisterOptionsTable("EasyExperienceBar", options)
@@ -878,3 +892,17 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         c7 = c7,
     }
 end
+
+function EasyExperienceBar:ResetTimes()
+    EasyExperienceBar.session.gainedXP = 0
+    EasyExperienceBar.session.lastXP = _G.UnitXP("player") or 0
+    EasyExperienceBar.session.maxXP = _G.UnitXPMax("player") or 0
+    EasyExperienceBar.session.startTime = _G.GetTime()
+    EasyExperienceBar.session.lastSessionLevelTime = 0
+    EasyExperienceBar.lastSessionLevelTime = 0
+    EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
+    EasyExperienceBar.session.lastSessionTotalTime = 0
+    EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
+    EasyExperienceBar:Update()
+end
+
