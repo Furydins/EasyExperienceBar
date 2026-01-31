@@ -41,3 +41,6 @@ L["Completed Quest XP Bar"] = true
 L["Show a bar indicating how much XP is available from completed quests"] = true
 L["Text Outline"] = true
 L["Adds a black outline to text"] = true
+L["None"] = true
+L["Outline"] = true
+L["Thick Outline"] = true

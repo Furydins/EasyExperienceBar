@@ -240,18 +240,21 @@ function EasyExperienceBar:Options()
                     end,
             },
             outline = {
-                type = 'toggle',
+                type = 'select',
                 order = 15,
                 name = L["Text Outline"],
                 desc = L["Adds a black outline to text"],
-                width = "full",
+                values = { ["NONE"] = L["None"], ["THICKOUTLINE"] = L["Thick Outline"], ["OUTLINE"] = L["Outline"] },
+                sorting = { "NONE", "OUTLINE", "THICKOUTLINE" },
+                style = "dropdown",
+                width = "normal",
                 get = function(info)  return EasyExperienceBar.global.fontOutline end,
                 set = function(info,val) 
-                    if EasyExperienceBar.global.fontOutline then
-                        EasyExperienceBar.global.fontOutline = nil
-                    else
-                        EasyExperienceBar.global.fontOutline = "THICKOUTLINE"
-                    end
+                        if val == "NONE" then
+                            EasyExperienceBar.global.fontOutline = nil
+                        else
+                            EasyExperienceBar.global.fontOutline = val
+                        end
                         EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
                     end,
             },
