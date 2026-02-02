@@ -44,3 +44,5 @@ L["Adds a black outline to text"] = true
 L["None"] = true
 L["Outline"] = true
 L["Thick Outline"] = true
+L["Display"] = true
+L["Settings"] = true

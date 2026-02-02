@@ -122,7 +122,7 @@ function EasyExperienceBar:Options()
             header2 = {
                 type = 'header',
                 order = 6,
-                name = 'Settings',
+                name = L["Settings"],
             },
             showMaxLevel = {
                 type = 'toggle',
@@ -165,7 +165,7 @@ function EasyExperienceBar:Options()
             header3 = {
                 type = 'header',
                 order = 10,
-                name = 'Display',
+                name = L["Display"],
             },
              lockBar = {
                 type = 'toggle',
