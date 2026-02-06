@@ -50,11 +50,12 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.hideXpBar == nil then EasyExperienceBar.global.hideXpBar = true end
     if EasyExperienceBar.global.lockBar == nil then EasyExperienceBar.global.lockBar = false end
     if EasyExperienceBar.global.font == nil then EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF" end
-    if EasyExperienceBar.global.fontOutline == nil then EasyExperienceBar.global.fontOutline = "THIKOUTLINE" end
+    if EasyExperienceBar.global.fontOutline == nil then EasyExperienceBar.global.fontOutline = "THICKOUTLINE" end
     if EasyExperienceBar.global.bartexture == nil then EasyExperienceBar.global.bartexture = "Interface\\TargetingFrame\\UI-StatusBar" end
     if EasyExperienceBar.global.barWidth == nil then EasyExperienceBar.global.barWidth = 600 end
     if EasyExperienceBar.global.barHeight == nil then EasyExperienceBar.global.barHeight = 30 end
     if EasyExperienceBar.global.fontSize == nil then EasyExperienceBar.global.fontSize = 14 end
+    if EasyExperienceBar.global.classColour == nil then EasyExperienceBar.global.classColour = false end
 
     local options = {
         name = L["Easy Experience Bar"],
@@ -247,9 +248,28 @@ function EasyExperienceBar:Options()
                     EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
                     end
             },
-            textures = {
+            outline = {
                 type = 'select',
                 order = 16,
+                name = L["Text Outline"],
+                desc = L["Adds a black outline to text"],
+                values = { ["NONE"] = L["None"], ["THICKOUTLINE"] = L["Thick Outline"], ["OUTLINE"] = L["Outline"] },
+                sorting = { "NONE", "OUTLINE", "THICKOUTLINE" },
+                style = "dropdown",
+                width = "normal",
+                get = function(info)  return EasyExperienceBar.global.fontOutline end,
+                set = function(info,val) 
+                        if val == "NONE" then
+                            EasyExperienceBar.global.fontOutline = nil
+                        else
+                            EasyExperienceBar.global.fontOutline = val
+                        end
+                        EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
+                    end,
+            },
+            textures = {
+                type = 'select',
+                order = 17,
                 name = L["Bar Texture"],
                 desc = L["Selects the texture used for the bars"],
                 dialogControl = 'LSM30_Statusbar',
@@ -269,32 +289,24 @@ function EasyExperienceBar:Options()
                     EasyExperienceBar:ChangeTexture(EasyExperienceBar.global.bartexture)
                     end,
             },
-            outline = {
-                type = 'select',
-                order = 17,
-                name = L["Text Outline"],
-                desc = L["Adds a black outline to text"],
-                values = { ["NONE"] = L["None"], ["THICKOUTLINE"] = L["Thick Outline"], ["OUTLINE"] = L["Outline"] },
-                sorting = { "NONE", "OUTLINE", "THICKOUTLINE" },
-                style = "dropdown",
-                width = "normal",
-                get = function(info)  return EasyExperienceBar.global.fontOutline end,
-                set = function(info,val) 
-                        if val == "NONE" then
-                            EasyExperienceBar.global.fontOutline = nil
-                        else
-                            EasyExperienceBar.global.fontOutline = val
-                        end
-                        EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
+            classColour = {
+                type = 'toggle',
+                order = 18,
+                name = L["Use Class Color"],
+                desc = L["Uses the player's class color for the progress bar"],
+                width = "full",
+                get = function(info)  return EasyExperienceBar.global.classColour end,
+                set = function(info,val) EasyExperienceBar.global.classColour = val
+                     EasyExperienceBar:ChangeTexture(EasyExperienceBar.global.bartexture)
                     end,
             },
             header4 = {
                 type = 'header',
-                order = 18,
+                order = 19,
                 name = 'Data',
             },
               resetGuide = {
-                order = 19,
+                order = 20,
                 type = "execute",
                 name = L["Reset Timers"],
                 desc = L["Resets Session and Level time"],
@@ -476,6 +488,20 @@ function EasyExperienceBar:RegisterEvents()
 end
 
 function EasyExperienceBar:CreateProgressBar(parent)
+    local startColour = _G.CreateColor(0.335, 0.388, 1.0)
+    local endColour =  _G.CreateColor(0.773, 0.380, 1.0)
+
+    if EasyExperienceBar.global.classColour then
+        local colourRgb
+        if  C_ClassColor then
+            colourRgb = C_ClassColor.GetClassColor( _G.UnitClass("player"))
+        else
+           colourRGB =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
+        end
+        startColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
+        endColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
+    end
+
     local progressBar = _G.CreateFrame("StatusBar", nil, EasyExperienceBar.MainFrame,
                 _G.BackdropTemplateMixin and "BackdropTemplate")
     progressBar:SetPoint("CENTER", EasyExperienceBar.MainFrame, 0, 0)
@@ -484,10 +510,7 @@ function EasyExperienceBar:CreateProgressBar(parent)
     local texture = progressBar:CreateTexture()
     texture:SetPoint("CENTER")
     texture:SetTexture(EasyExperienceBar.global.bartexture)
-
-    local tstart = _G.CreateColor(0.335, 0.388, 1.0)
-    local tend = _G.CreateColor(0.773, 0.380, 1.0)
-    texture:SetGradient("HORIZONTAL", tstart, tend)
+    texture:SetGradient("HORIZONTAL", startColour, endColour)
 
     progressBar:SetStatusBarTexture(texture)
     progressBar:SetMinMaxValues(0, 100)
@@ -627,22 +650,34 @@ function EasyExperienceBar:ChangeFont(font)
 end
 
 function EasyExperienceBar:ChangeTexture(bartexture)
-    if bartexture then
-        local texture = EasyExperienceBar.ProgressBar:CreateTexture()
-        texture:SetPoint("CENTER")
-        texture:SetTexture(EasyExperienceBar.global.bartexture)
-        local tstart = _G.CreateColor(0.335, 0.388, 1.0)
-        local tend = _G.CreateColor(0.773, 0.380, 1.0)
-        texture:SetGradient("HORIZONTAL", tstart, tend)
-        EasyExperienceBar.ProgressBar:SetStatusBarTexture(texture)
+    local startColour = _G.CreateColor(0.335, 0.388, 1.0)
+    local endColour =  _G.CreateColor(0.773, 0.380, 1.0)
 
-        texture = EasyExperienceBar.QuestBar:CreateTexture()
-        texture:SetPoint("CENTER")
-        texture:SetTexture(EasyExperienceBar.global.bartexture)
-         local tstart = _G.CreateColor(1.0, 0.589, 0.0, 1)
+    if EasyExperienceBar.global.classColour then
+        local colourRgb
+        if  C_ClassColor then
+           colourRgb = C_ClassColor.GetClassColor( _G.UnitClass("player"))
+        else
+           colourRgb =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
+        end
+        startColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
+        endColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
+    end
+
+    if bartexture then
+        local progressTexture = EasyExperienceBar.ProgressBar:CreateTexture()
+        progressTexture:SetPoint("CENTER")
+        progressTexture:SetTexture(EasyExperienceBar.global.bartexture)
+        progressTexture:SetGradient("HORIZONTAL", startColour, endColour)
+        EasyExperienceBar.ProgressBar:SetStatusBarTexture(progressTexture)
+
+        local questTexture = EasyExperienceBar.QuestBar:CreateTexture()
+        questTexture:SetPoint("CENTER")
+        questTexture:SetTexture(EasyExperienceBar.global.bartexture)
+        local tstart = _G.CreateColor(1.0, 0.589, 0.0, 1)
         local tend = _G.CreateColor(1.0, 0.589, 0.0, 1)
-        texture:SetGradient("HORIZONTAL", tstart, tend)
-        EasyExperienceBar.QuestBar:SetStatusBarTexture(texture)
+        questTexture:SetGradient("HORIZONTAL", tstart, tend)
+        EasyExperienceBar.QuestBar:SetStatusBarTexture(questTexture)
     end
 end
 

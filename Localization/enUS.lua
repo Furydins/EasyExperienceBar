@@ -52,3 +52,5 @@ L["Height"] = true
 L["Adjust bar height"] = true
 L["Font Size"] = true
 L["Adjust font size"] = true
+L["Use Class Color"] = true
+L["Uses the player's class color for the progress bar"] = true
