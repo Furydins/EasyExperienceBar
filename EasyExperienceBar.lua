@@ -805,7 +805,7 @@ function EasyExperienceBar:CalculateValues()
 end
 
 function EasyExperienceBar:UpdateQuestXP()
-    local _, numQ = EasyExperienceBar.GetNumQuestLogEntries()
+    local numQ, _ = EasyExperienceBar.GetNumQuestLogEntries()
     local questXP = 0
     local completeXP = 0
     local incompleteXP = 0
