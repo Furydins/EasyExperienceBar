@@ -2,13 +2,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "ptBR", true)
 
 L = L or {}
 L["Adds a black outline to text"] = "Adiciona um contorno preto ao texto"
---[[Translation missing --]]
-L["Adjust bar height"] = "Adjust bar height"
 L["Adjust bar size"] = "Ajustar tamanho da barra"
---[[Translation missing --]]
-L["Adjust bar width"] = "Adjust bar width"
---[[Translation missing --]]
-L["Adjust font size"] = "Adjust font size"
 L["Bar Texture"] = "Textura da Barra"
 L["Completed & Rested Text"] = "Texto de Concluído e Descansado"
 L["Completed Quest XP Bar"] = "Barra de XP de Missões Concluídas"
@@ -20,10 +14,6 @@ L["Do not retain stats after a /reload"] = "Não manter estatísticas após um /
 L["Easy Experience Bar"] = "Easy Experience Bar"
 L["Font"] = "Fonte"
 L["Font Selector"] = "Seletor de Fonte"
---[[Translation missing --]]
-L["Font Size"] = "Font Size"
---[[Translation missing --]]
-L["Height"] = "Height"
 L["Hide Default Experience Bar"] = "Ocultar Barra de Experiência Padrão"
 L["Hides the standard XP bar"] = "Oculta a barra de XP padrão"
 L["Information"] = "Informações"
@@ -59,10 +49,4 @@ L["Thick Outline"] = "Thick Outline"
 L["Time played:"] = "Tempo jogado:"
 L["Time this level:"] = "Tempo neste nível:"
 L["Time this session:"] = "Tempo nesta sessão:"
---[[Translation missing --]]
-L["Use Class Color"] = "Use Class Color"
---[[Translation missing --]]
-L["Uses the player's class color for the progress bar"] = "Uses the player's class color for the progress bar"
---[[Translation missing --]]
-L["Width"] = "Width"
 L["XP/Hour"] = "XP/Hora"

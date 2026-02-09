@@ -68,3 +68,4 @@ L["Uses the player's class color for the progress bar"] = "Uses the player's cla
 --[[Translation missing --]]
 L["Width"] = "Width"
 L["XP/Hour"] = "Опыт/час"
+
