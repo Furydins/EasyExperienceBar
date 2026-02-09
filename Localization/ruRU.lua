@@ -38,3 +38,4 @@ L["Time played:"] = "Время игры:"
 L["Time this level:"] = "На этом уровне:"
 L["Time this session:"] = "В этой сессии:"
 L["XP/Hour"] = "Опыт/час"
+
