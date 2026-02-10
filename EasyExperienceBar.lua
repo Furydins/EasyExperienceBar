@@ -259,11 +259,7 @@ function EasyExperienceBar:Options()
                 width = "normal",
                 get = function(info)  return EasyExperienceBar.global.fontOutline end,
                 set = function(info,val) 
-                        if val == "NONE" then
-                            EasyExperienceBar.global.fontOutline = nil
-                        else
-                            EasyExperienceBar.global.fontOutline = val
-                        end
+                        EasyExperienceBar.global.fontOutline = val
                         EasyExperienceBar:ChangeFont(EasyExperienceBar.global.font)
                     end,
             },
@@ -558,9 +554,15 @@ function EasyExperienceBar:CreateQuestBar(parent, scale)
 end
 
  function EasyExperienceBar:CreateTexts(frame, scale)
+    local fontOutline
+    if "NONE" ==  EasyExperienceBar.global.fontOutline then
+        fontOutline = nil
+    else
+        fontOutline = EasyExperienceBar.global.fontOutline
+    end
     local levelText = frame:CreateFontString(nil, nil, "GameTooltipText")
     levelText:SetPoint("LEFT", frame, "LEFT" , 5, 0)
-    levelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
+    levelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
     levelText:SetWidth(100)
     levelText:SetJustifyH("LEFT")
     levelText:SetTextColor(1,1,1)
@@ -568,7 +570,7 @@ end
 
     local progressText = frame:CreateFontString(nil, nil, "GameTooltipText")
     progressText:SetPoint("CENTER", frame, "CENTER" , 0, 0)
-    progressText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
+    progressText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
     progressText:SetWidth(350)
     progressText:SetJustifyH("CENTER")
     progressText:SetTextColor(1,1,1)
@@ -576,28 +578,28 @@ end
 
     local percentText = frame:CreateFontString(nil, nil, "GameTooltipText")
     percentText:SetPoint("RIGHT", frame, "RIGHT" , -5, 0)
-    percentText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
+    percentText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
     percentText:SetJustifyH("RIGHT")
     percentText:SetWidth(150)
     percentText:SetText("Percent Test")
 
     local levelTimeText = frame:CreateFontString(nil, nil, "GameTooltipText")
     levelTimeText:SetPoint("TOPLEFT", frame, "TOPLEFT" , 5, 15)
-    levelTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
+    levelTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     levelTimeText:SetWidth(300)
     levelTimeText:SetJustifyH("LEFT")
     levelTimeText:SetText("Level Time")
 
     local sessionTimeText = frame:CreateFontString(nil, nil, "GameTooltipText")
     sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 15)
-    sessionTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
+    sessionTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     sessionTimeText:SetJustifyH("RIGHT")
     sessionTimeText:SetWidth(300)
     sessionTimeText:SetText("Session Time")
 
     local timeToLevelText = frame:CreateFontString(nil, nil, "GameTooltipText")
     timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
-    timeToLevelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
+    timeToLevelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     timeToLevelText:SetWidth(320)
     timeToLevelText:SetJustifyH("LEFT")
     timeToLevelText:SetText("Time To Level")
@@ -605,7 +607,7 @@ end
 
     local statText = frame:CreateFontString(nil, nil, "GameTooltipText")
     statText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT" , -5, -20)
-    statText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
+    statText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     statText:SetJustifyH("RIGHT")
     statText:SetWidth(280)
     statText:SetText("Stats")
@@ -621,31 +623,43 @@ end
  end
 
 function EasyExperienceBar:Resize()
+    local fontOutline
+    if "NONE" ==  EasyExperienceBar.global.fontOutline then
+        fontoutline = nil
+    else
+        fontOutline = EasyExperienceBar.global.fontOutline
+    end
 
     EasyExperienceBar.MainFrame:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight )
     EasyExperienceBar.ProgressBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
     EasyExperienceBar.BackgroundBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
     EasyExperienceBar.RestedBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
     EasyExperienceBar.QuestBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
-    EasyExperienceBar.Texts.levelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
-    EasyExperienceBar.Texts.progressText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
-    EasyExperienceBar.Texts.percentText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
-    EasyExperienceBar.Texts.levelTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
-    EasyExperienceBar.Texts.sessionTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
-    EasyExperienceBar.Texts.timeToLevelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
-    EasyExperienceBar.Texts.statText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
+    EasyExperienceBar.Texts.levelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
+    EasyExperienceBar.Texts.progressText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
+    EasyExperienceBar.Texts.percentText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
+    EasyExperienceBar.Texts.levelTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+    EasyExperienceBar.Texts.sessionTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+    EasyExperienceBar.Texts.timeToLevelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+    EasyExperienceBar.Texts.statText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
 end
 
 
 function EasyExperienceBar:ChangeFont(font)
+    local fontOutline
+    if "NONE" ==  EasyExperienceBar.global.fontOutline then
+        fontOutline = nil
+    else
+        fontOutline = EasyExperienceBar.global.fontOutline
+    end
     if font then 
-        EasyExperienceBar.Texts.levelText:SetFont(font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.progressText:SetFont(font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.percentText:SetFont(font, EasyExperienceBar.global.fontSize, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.levelTimeText:SetFont(font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.sessionTimeText:SetFont(font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.timeToLevelText:SetFont(font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
-        EasyExperienceBar.Texts.statText:SetFont(font, EasyExperienceBar.global.fontSize - 1, EasyExperienceBar.global.fontOutline)
+        EasyExperienceBar.Texts.levelText:SetFont(font, EasyExperienceBar.global.fontSize, fontOutline)
+        EasyExperienceBar.Texts.progressText:SetFont(font, EasyExperienceBar.global.fontSize, fontOutline)
+        EasyExperienceBar.Texts.percentText:SetFont(font, EasyExperienceBar.global.fontSize, fontOutline)
+        EasyExperienceBar.Texts.levelTimeText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+        EasyExperienceBar.Texts.sessionTimeText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+        EasyExperienceBar.Texts.timeToLevelText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+        EasyExperienceBar.Texts.statText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     end
 end
 
