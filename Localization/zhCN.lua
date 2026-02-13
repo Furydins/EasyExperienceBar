@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "zhCN", true)
+local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "zhCN", false)
 
 L = L or {}
 L["Adds a black outline to text"] = "为文本添加黑色轮廓"

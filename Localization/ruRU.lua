@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "koKR", true)
+local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "koKR", false)
 
 L = L or {}
 L["Adds a black outline to text"] = "Добавляет чёрную обводку к тексту"
