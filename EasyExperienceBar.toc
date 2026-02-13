@@ -2,7 +2,7 @@
 ## Title: Easy Experience Bar
 ## Notes: Experience Tracking Bar
 ## Author: FurydinWow
-## Version: 2026.02.10.B
+## Version: 2026.02.13.A
 ## SavedVariables: EasyExperienceDB
 ## Category: Quests
 ## Category-deDE: Quests
