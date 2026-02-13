@@ -492,7 +492,7 @@ function EasyExperienceBar:CreateProgressBar(parent)
         if  C_ClassColor then
             colourRgb = C_ClassColor.GetClassColor( _G.UnitClass("player"))
         else
-           colourRGB =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
+           colourRgb =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
         end
         startColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
         endColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
