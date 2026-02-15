@@ -4,7 +4,6 @@ local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "enUS", true)
 L["Easy Experience Bar"] = true
 L["Information"] = true
 L["Played Time Text"] = true
-L["Played Time Text"] = true
 L["Show Level time text"] = true
 L["Session Time Text"] = true
 L["Show current session time"] = true

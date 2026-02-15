@@ -2,13 +2,10 @@ local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "ptBR", false)
 
 L = L or {}
 L["Adds a black outline to text"] = "Adiciona um contorno preto ao texto"
---[[Translation missing --]]
-L["Adjust bar height"] = "Adjust bar height"
+L["Adjust bar height"] = "Ajustar altura da barra"
 L["Adjust bar size"] = "Ajustar tamanho da barra"
---[[Translation missing --]]
-L["Adjust bar width"] = "Adjust bar width"
---[[Translation missing --]]
-L["Adjust font size"] = "Adjust font size"
+L["Adjust bar width"] = "Ajustar largura da barra"
+L["Adjust font size"] = "Ajustar tamanho da fonte"
 L["Bar Texture"] = "Textura da Barra"
 L["Completed & Rested Text"] = "Texto de Concluído e Descansado"
 L["Completed Quest XP Bar"] = "Barra de XP de Missões Concluídas"
@@ -20,10 +17,8 @@ L["Do not retain stats after a /reload"] = "Não manter estatísticas após um /
 L["Easy Experience Bar"] = "Easy Experience Bar"
 L["Font"] = "Fonte"
 L["Font Selector"] = "Seletor de Fonte"
---[[Translation missing --]]
-L["Font Size"] = "Font Size"
---[[Translation missing --]]
-L["Height"] = "Height"
+L["Font Size"] = "Tamanho da Fonte"
+L["Height"] = "Altura"
 L["Hide Default Experience Bar"] = "Ocultar Barra de Experiência Padrão"
 L["Hides the standard XP bar"] = "Oculta a barra de XP padrão"
 L["Information"] = "Informações"
@@ -32,16 +27,12 @@ L["Leveling in:"] = "Subir de nível em:"
 L["Leveling Time & XP/Hour Text"] = "Texto de Tempo de Nivelamento e XP/Hora"
 L["Lock Bar"] = "Bloquear Barra"
 L["Max Level"] = "Nível Máximo"
---[[Translation missing --]]
-L["None"] = "None"
---[[Translation missing --]]
-L["Outline"] = "Outline"
+L["None"] = "Nenhum"
+L["Outline"] = "Contorno"
 L["Played Time Text"] = "Texto de Tempo Jogado"
 L["Reset Session Time and XP/Hour on Reload UI"] = "Redefinir Tempo da Sessão e XP/Hora ao Recarregar a Interface"
---[[Translation missing --]]
-L["Reset Timers"] = "Reset Timers"
---[[Translation missing --]]
-L["Resets Session and Level time"] = "Resets Session and Level time"
+L["Reset Timers"] = "Redefinir Temporizadores"
+L["Resets Session and Level time"] = "Redefine os tempos da Sessão e do Nível"
 L["Rested:"] = "Descansado:"
 L["Selects the texture used for the bars"] = "Seleciona a textura usada para as barras"
 L["Session Time Text"] = "Texto de Tempo da Sessão"
@@ -54,16 +45,11 @@ L["Show how much rested XP and XP from completed quests the character has"] = "M
 L["Show Level time text"] = "Mostrar texto de tempo de nível"
 L["Size"] = "Tamanho"
 L["Text Outline"] = "Contorno do Texto"
---[[Translation missing --]]
-L["Thick Outline"] = "Thick Outline"
+L["Thick Outline"] = "Contorno Espesso"
 L["Time played:"] = "Tempo jogado:"
 L["Time this level:"] = "Tempo neste nível:"
 L["Time this session:"] = "Tempo nesta sessão:"
---[[Translation missing --]]
-L["Use Class Color"] = "Use Class Color"
---[[Translation missing --]]
-L["Uses the player's class color for the progress bar"] = "Uses the player's class color for the progress bar"
---[[Translation missing --]]
-L["Width"] = "Width"
+L["Use Class Color"] = "Usar Cor da Classe"
+L["Uses the player's class color for the progress bar"] = "Usa a cor da classe do jogador para a barra de progresso"
+L["Width"] = "Largura"
 L["XP/Hour"] = "XP/Hora"
-
