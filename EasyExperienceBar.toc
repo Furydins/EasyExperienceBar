@@ -15,6 +15,9 @@
 ## Category-ruRU: Задания
 ## Category-zhCN: 任务
 ## Category-zhTW: 任務
+## X-Curse-Project-ID: 1387290
+## X-Wago-ID: j6jzP46R
+## X-WoWI-ID: 26994
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
