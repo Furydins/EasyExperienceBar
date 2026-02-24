@@ -490,7 +490,7 @@ function EasyExperienceBar:CreateProgressBar(parent)
     if EasyExperienceBar.global.classColour then
         local colourRgb
         if  C_ClassColor then
-            colourRgb = C_ClassColor.GetClassColor( _G.UnitClass("player"))
+            colourRgb =  C_ClassColor.GetClassColor(_G.select(2, _G.UnitClass("player")))
         else
            colourRgb =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
         end
