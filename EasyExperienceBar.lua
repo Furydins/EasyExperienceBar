@@ -321,11 +321,11 @@ function EasyExperienceBar:ResetBar()
             not EasyExperienceBar.UpdateTimer:IsCancelled() then
             EasyExperienceBar:CreateTimer()
         end
-        if _G.StatusTrackingBarManager then
+        if _G.MainStatusTrackingBarContainer then
             if EasyExperienceBar.global.hideXpBar then
-                _G.StatusTrackingBarManager:Hide()
+                _G.MainStatusTrackingBarContainer:Hide()
             else
-                 _G.UIParent.Show(_G.StatusTrackingBarManager)
+                 _G.UIParent.Show(_G.MainStatusTrackingBarContainer)
             end
         end
 end
@@ -452,8 +452,8 @@ function EasyExperienceBar:OnInitialize()
     end
     EasyExperienceBar:RegisterEvents()
 
-    if EasyExperienceBar.global.hideXpBar and _G.StatusTrackingBarManager then
-        _G.StatusTrackingBarManager:Hide()
+    if EasyExperienceBar.global.hideXpBar and _G.MainStatusTrackingBarContainer then
+        _G.MainStatusTrackingBarContainer:Hide()
     end
 
     EasyExperienceBar.MainFrame:SetScript("OnMouseDown", function(this, button)
