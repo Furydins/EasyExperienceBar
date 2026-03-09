@@ -420,10 +420,26 @@ function EasyExperienceBar:OnInitialize()
 
     EasyExperienceBar.MainFrame = _G.CreateFrame("Button", "EasyExperienceBar.MainFrame", _G.UIParent,
                   _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
-    EasyExperienceBar.MainFrame:SetPoint("TOP", _G.UIParent, -7, -70)
+   
     EasyExperienceBar.MainFrame:SetFrameStrata("BACKGROUND")
     EasyExperienceBar.MainFrame:SetSize(width, height)
     EasyExperienceBar.MainFrame:SetMovable(true)
+
+    if not EasyExperienceBar.session.location then
+        if not EasyExperienceBar.global.location then
+            EasyExperienceBar.MainFrame:SetPoint("TOP", _G.UIParent, -7, -70)
+        else 
+            EasyExperienceBar.MainFrame:SetPoint(EasyExperienceBar.global.location[1], 
+                    _G.UIParent, EasyExperienceBar.global.location[3], EasyExperienceBar.global.location[4], 
+                   EasyExperienceBar.global.location[5])
+        end
+    else
+        EasyExperienceBar.MainFrame:SetPoint(EasyExperienceBar.session.location[1], 
+                _G.UIParent, EasyExperienceBar.session.location[3], EasyExperienceBar.session.location[4], 
+               EasyExperienceBar.session.location[5])
+    end
+
+    EasyExperienceBar:StoreLocation()
 
     EasyExperienceBar.BackgroundBar = EasyExperienceBar:CreateBackgroundBar(EasyExperienceBar.MainFrame)
     EasyExperienceBar.BackgroundBar:SetValue(100)
@@ -464,6 +480,7 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.MainFrame:SetScript("OnMouseUp", function(this, button)
         if button == "LeftButton" then
             this:StopMovingOrSizing()
+            EasyExperienceBar:StoreLocation()
         end
     end)
 end
@@ -990,3 +1007,21 @@ function EasyExperienceBar:ResetTimes()
     EasyExperienceBar:Update()
 end
 
+function EasyExperienceBar:StoreLocation()
+    if EasyExperienceBar.global.location == nil then
+        EasyExperienceBar.global.location = {}
+    end
+    point, relativeTo, relativePoint, offsetX, offsetY = EasyExperienceBar.MainFrame:GetPoint()
+    EasyExperienceBar.global.location[1] = point
+    EasyExperienceBar.global.location[3] = relativePoint
+    EasyExperienceBar.global.location[4] = offsetX
+    EasyExperienceBar.global.location[5] = offsetY
+
+     if EasyExperienceBar.session.location == nil then
+        EasyExperienceBar.session.location = {}
+    end
+    EasyExperienceBar.session.location[1] = point
+    EasyExperienceBar.session.location[3] = relativePoint
+    EasyExperienceBar.session.location[4] = offsetX
+    EasyExperienceBar.session.location[5] = offsetY
+end
