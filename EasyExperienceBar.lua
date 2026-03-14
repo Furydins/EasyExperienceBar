@@ -9,7 +9,6 @@ EasyExperienceBar.LSM = _G.LibStub("LibSharedMedia-3.0")
 EasyExperienceBar.MainFrame = nil
 EasyExperienceBar.ProgressBar = nil
 EasyExperienceBar.sessionTime = 0
-EasyExperienceBar.Gap = 5
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EasyExperienceBar")
 
@@ -90,6 +89,9 @@ function EasyExperienceBar:Options()
     end
     if EasyExperienceBar.global.fontSize == nil then
         EasyExperienceBar.global.fontSize = 14
+    end
+    if EasyExperienceBar.global.gap == nil then
+        EasyExperienceBar.global.gap = 1
     end
     if EasyExperienceBar.global.classColour == nil then
         EasyExperienceBar.global.classColour = false
@@ -320,9 +322,9 @@ function EasyExperienceBar:Options()
                 max = 10,
                 step = 1,
                 width = "full",
-                get = function(info) return EasyExperienceBar.Gap end,
+                get = function(info) return EasyExperienceBar.global.gap end,
                 set = function(info, val)
-                    EasyExperienceBar.Gap = val
+                    EasyExperienceBar.global.gap = val
                     EasyExperienceBar:Resize()
                 end
             },
@@ -554,6 +556,7 @@ function EasyExperienceBar:OnInitialize()
     local width = EasyExperienceBar.global.barWidth or 600
     local height = EasyExperienceBar.global.barHeight or 30
     local fontSize = EasyExperienceBar.global.fontSize or 14
+    local gap = EasyExperienceBar.global.gap or 1
 
     EasyExperienceBar.MainFrame = _G.CreateFrame("Button",
                                                  "EasyExperienceBar.MainFrame",
@@ -768,7 +771,7 @@ function EasyExperienceBar:CreateTexts(frame, scale)
 
     local levelTimeText = frame:CreateFontString(nil, nil, "GameTooltipText")
     levelTimeText:SetPoint("BOTTOMLEFT", EasyExperienceBar.MainFrame, "TOPLEFT",
-                           5, EasyExperienceBar.Gap)
+                           5, EasyExperienceBar.global.gap)
     levelTimeText:SetFont(EasyExperienceBar.global.font,
                           EasyExperienceBar.global.fontSize - 1, fontOutline)
     levelTimeText:SetWidth(300)
@@ -777,7 +780,7 @@ function EasyExperienceBar:CreateTexts(frame, scale)
 
     local sessionTimeText = frame:CreateFontString(nil, nil, "GameTooltipText")
     sessionTimeText:SetPoint("BOTTOMRIGHT", EasyExperienceBar.MainFrame,
-                             "TOPRIGHT", -5, EasyExperienceBar.Gap)
+                             "TOPRIGHT", -5, EasyExperienceBar.global.gap)
     sessionTimeText:SetFont(EasyExperienceBar.global.font,
                             EasyExperienceBar.global.fontSize - 1, fontOutline)
     sessionTimeText:SetJustifyH("RIGHT")
@@ -786,7 +789,7 @@ function EasyExperienceBar:CreateTexts(frame, scale)
 
     local timeToLevelText = frame:CreateFontString(nil, nil, "GameTooltipText")
     timeToLevelText:SetPoint("TOPLEFT", EasyExperienceBar.MainFrame,
-                             "BOTTOMLEFT", 5, -(EasyExperienceBar.Gap))
+                             "BOTTOMLEFT", 5, -(EasyExperienceBar.global.gap))
     timeToLevelText:SetFont(EasyExperienceBar.global.font,
                             EasyExperienceBar.global.fontSize - 1, fontOutline)
     timeToLevelText:SetWidth(320)
@@ -796,7 +799,7 @@ function EasyExperienceBar:CreateTexts(frame, scale)
 
     local statText = frame:CreateFontString(nil, nil, "GameTooltipText")
     statText:SetPoint("TOPRIGHT", EasyExperienceBar.MainFrame, "BOTTOMRIGHT",
-                      -5, -(EasyExperienceBar.Gap))
+                      -5, -(EasyExperienceBar.global.gap))
     statText:SetFont(EasyExperienceBar.global.font,
                      EasyExperienceBar.global.fontSize - 1, fontOutline)
     statText:SetJustifyH("RIGHT")
@@ -856,19 +859,21 @@ function EasyExperienceBar:Resize()
     EasyExperienceBar.Texts.levelTimeText:SetPoint("BOTTOMLEFT",
                                                    EasyExperienceBar.MainFrame,
                                                    "TOPLEFT", 5,
-                                                   EasyExperienceBar.Gap)
+                                                   EasyExperienceBar.global.gap)
     EasyExperienceBar.Texts.sessionTimeText:SetPoint("BOTTOMRIGHT",
                                                      EasyExperienceBar.MainFrame,
                                                      "TOPRIGHT", -5,
-                                                     EasyExperienceBar.Gap)
+                                                     EasyExperienceBar.global
+                                                         .gap)
     EasyExperienceBar.Texts.timeToLevelText:SetPoint("TOPLEFT",
                                                      EasyExperienceBar.MainFrame,
                                                      "BOTTOMLEFT", 5,
-                                                     -EasyExperienceBar.Gap)
+                                                     -EasyExperienceBar.global
+                                                         .gap)
     EasyExperienceBar.Texts.statText:SetPoint("TOPRIGHT",
                                               EasyExperienceBar.MainFrame,
                                               "BOTTOMRIGHT", -5,
-                                              -EasyExperienceBar.Gap)
+                                              -EasyExperienceBar.global.gap)
 end
 
 function EasyExperienceBar:ChangeFont(font)
