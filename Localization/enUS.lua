@@ -1,4 +1,4 @@
---localization file for english/United States
+-- localization file for english/United States
 local L = LibStub("AceLocale-3.0"):NewLocale("EasyExperienceBar", "enUS", true)
 
 L["Easy Experience Bar"] = true
@@ -10,7 +10,8 @@ L["Show current session time"] = true
 L["Leveling Time & XP/Hour Text"] = true
 L["Show an estimate of how long it takes to hit the next level"] = true
 L["Completed & Rested Text"] = true
-L["Show how much rested XP and XP from completed quests the character has"] = true
+L["Show how much rested XP and XP from completed quests the character has"] =
+    true
 L["Show Bar at Max Level"] = true
 L["Do not hide the bar on max level characters"] = true
 L["Reset Session Time and XP/Hour on Reload UI"] = true
@@ -27,7 +28,7 @@ L["Bar Texture"] = true
 L["Selects the texture used for the bars"] = true
 L["Level "] = true
 L["Max Level"] = true
-L["Leveling in:"]  = true
+L["Leveling in:"] = true
 L["XP/Hour"] = true
 L["Completed:"] = true
 L["Reset Timers"] = true
@@ -53,3 +54,5 @@ L["Font Size"] = true
 L["Adjust font size"] = true
 L["Use Class Color"] = true
 L["Uses the player's class color for the progress bar"] = true
+L["Gap Size"] = true
+L["Adjust gap between Progress Bar and text"] = true
