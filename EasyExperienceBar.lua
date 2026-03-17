@@ -402,7 +402,7 @@ function EasyExperienceBar:Options()
             },
             classColour = {
                 type = 'toggle',
-                order = 20,
+                order = 19,
                 name = L["Use Class Color"],
                 desc = L["Uses the player's class color for the progress bar"],
                 width = "full",
@@ -415,7 +415,7 @@ function EasyExperienceBar:Options()
                         EasyExperienceBar.global.bartexture)
                 end
             },
-            header4 = {type = 'header', order = 19, name = 'Data'},
+            header4 = {type = 'header', order = 20, name = 'Data'},
             resetGuide = {
                 order = 21,
                 type = "execute",
