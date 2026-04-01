@@ -705,6 +705,11 @@ function EasyExperienceBar:ChangeFont(font)
     end
 end
 
+function EasyExperienceBar:ChangeFrameStrata(strata)
+    EasyExperienceBar.MainFrame:SetFrameStrata(strata)
+    EasyExperienceBar.global.frameStrata = strata
+end
+ 
 function EasyExperienceBar:ChangeTexture(bartexture)
     local startColour = _G.CreateColor(0.335, 0.388, 1.0)
     local endColour =  _G.CreateColor(0.773, 0.380, 1.0)
