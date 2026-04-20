@@ -53,3 +53,15 @@ L["Font Size"] = true
 L["Adjust font size"] = true
 L["Use Class Color"] = true
 L["Uses the player's class color for the progress bar"] = true
+L['Advanced'] = true
+L["FrameStrata"] = true
+L["Sets the Frame Level for the bar (can be used to prevent the bar from hiding 'behind' other UI elements)"] = true
+L["Background"] = true
+L["Low"] = true
+L["Medium"] = true
+L["High"] = true
+L["Dialog"] = true
+L["Reset Bar Position"] = true
+L["Resets Bar back to it's default position"] = true
+
+
