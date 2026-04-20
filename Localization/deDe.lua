@@ -53,3 +53,4 @@ L["Use Class Color"] = "Klassenfarbe verwenden"
 L["Uses the player's class color for the progress bar"] = "Verwendet die Klassenfarbe des Spielers für die EP-Leiste"
 L["Width"] = "Breite"
 L["XP/Hour"] = "EP/Stunde"
+
