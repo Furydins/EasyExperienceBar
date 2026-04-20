@@ -56,6 +56,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.barHeight == nil then EasyExperienceBar.global.barHeight = 30 end
     if EasyExperienceBar.global.fontSize == nil then EasyExperienceBar.global.fontSize = 14 end
     if EasyExperienceBar.global.classColour == nil then EasyExperienceBar.global.classColour = false end
+    if EasyExperienceBar.global.frameStrata == nil then EasyExperienceBar.global.frameStrata = "BACKGROUND" end
 
     local options = {
         name = L["Easy Experience Bar"],
@@ -299,10 +300,34 @@ function EasyExperienceBar:Options()
             header4 = {
                 type = 'header',
                 order = 19,
-                name = 'Data',
+                name = L['Advanced'],
             },
-              resetGuide = {
+            frameStrata = {
+                type = 'select',
                 order = 20,
+                name = L["FrameStrata"],
+                desc = L["Sets the Frame Level for the bar (can be used to prevent the bar from hiding 'behind' other UI elements)"],
+                values = { ["BACKGROUND"] = L["Background"], ["LOW"] = L["Low"], ["MEDIUM"] = L["Medium"], ["HIGH"] = L["High"], ["DIALOG"] = L["Dialog"] },
+                sorting = { "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG",},
+                style = "dropdown",
+                width = "Normal",
+                get = function(info)  return EasyExperienceBar.global.frameStrata end,
+                set = function(info,val) 
+                        EasyExperienceBar.global.frameStrata = val
+                        EasyExperienceBar:ChangeFrameStrata(EasyExperienceBar.global.frameStrata)
+                    end,
+            },
+            resetPos = {
+                order = 22,
+                type = "execute",
+                name = L["Reset Bar Position"],
+                desc = L["Resets Bar back to it's default position"],
+                func =  function (info)
+                            EasyExperienceBar:ResetBar()
+                        end
+            },
+              resetTimers = {
+                order = 22,
                 type = "execute",
                 name = L["Reset Timers"],
                 desc = L["Resets Session and Level time"],
@@ -680,6 +705,11 @@ function EasyExperienceBar:ChangeFont(font)
     end
 end
 
+function EasyExperienceBar:ChangeFrameStrata(strata)
+    EasyExperienceBar.MainFrame:SetFrameStrata(strata)
+    EasyExperienceBar.global.frameStrata = strata
+end
+ 
 function EasyExperienceBar:ChangeTexture(bartexture)
     local startColour = _G.CreateColor(0.335, 0.388, 1.0)
     local endColour =  _G.CreateColor(0.773, 0.380, 1.0)
@@ -1005,6 +1035,12 @@ function EasyExperienceBar:ResetTimes()
     EasyExperienceBar.session.lastSessionTotalTime = 0
     EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
     EasyExperienceBar:Update()
+end
+
+function EasyExperienceBar:ResetBar()
+    EasyExperienceBar.MainFrame:ClearAllPoints()
+    EasyExperienceBar.MainFrame:SetPoint("TOP", _G.UIParent, -7, -70)
+    EasyExperienceBar:StoreLocation()
 end
 
 function EasyExperienceBar:StoreLocation()
