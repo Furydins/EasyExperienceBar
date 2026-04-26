@@ -747,6 +747,7 @@ end
 
     if show then
         if not EasyExperienceBar.BackgroundBar:IsShown() then
+            EasyExperienceBar.MainFrame:Show()
             EasyExperienceBar.BackgroundBar:Show()
             EasyExperienceBar.QuestBar:Show()
             EasyExperienceBar.RestedBar:Show()
@@ -756,11 +757,11 @@ end
         EasyExperienceBar:CalculateValues()
         EasyExperienceBar:UpdateTexts()
     elseif EasyExperienceBar.BackgroundBar:IsShown() then
+        EasyExperienceBar.MainFrame:Hide()
         EasyExperienceBar.BackgroundBar:Hide()
         EasyExperienceBar.QuestBar:Hide()
         EasyExperienceBar.RestedBar:Hide()
         EasyExperienceBar.ProgressBar:Hide()
-    return true
     end
  end
 
