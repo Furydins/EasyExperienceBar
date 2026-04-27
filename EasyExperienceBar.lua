@@ -602,6 +602,15 @@ end
     else
         fontOutline = EasyExperienceBar.global.fontOutline
     end
+
+    -- Ensure we do not try to use an non existant font from a previous install
+    local testFont = UIParent:CreateFontString()
+	testFont:Hide()
+    if not pcall(testFont.SetFont, testFont, EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline) then
+        EasyExperienceBar:Print("Font not found, resetting to default")
+        EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF"
+    end
+
     local levelText = frame:CreateFontString(nil, nil, "GameTooltipText")
     levelText:SetPoint("LEFT", frame, "LEFT" , 5, 0)
     levelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
