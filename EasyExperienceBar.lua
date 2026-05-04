@@ -466,6 +466,18 @@ function EasyExperienceBar:OnInitialize()
 
     EasyExperienceBar:StoreLocation()
 
+    -- Validate custom textures
+    if C_UIFileAsset and not C_UIFileAsset.IsKnownFile(EasyExperienceBar.global.bartexture) then
+        EasyExperienceBar:Print("Bar texture not found, resetting to default")
+        EasyExperienceBar.global.bartexture = "Interface\\TargetingFrame\\UI-StatusBar"
+    end
+
+    -- Validate custom font
+    if C_UIFileAsset and not C_UIFileAsset.IsKnownFile(EasyExperienceBar.global.font) then
+        EasyExperienceBar:Print("Font not found, resetting to default")
+        EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF"
+    end
+
     EasyExperienceBar.BackgroundBar = EasyExperienceBar:CreateBackgroundBar(EasyExperienceBar.MainFrame)
     EasyExperienceBar.BackgroundBar:SetValue(100)
     EasyExperienceBar.BackgroundBar:SetFrameLevel(10)
@@ -601,14 +613,6 @@ end
         fontOutline = nil
     else
         fontOutline = EasyExperienceBar.global.fontOutline
-    end
-
-    -- Ensure we do not try to use an non existant font from a previous install
-    local testFont = UIParent:CreateFontString()
-	testFont:Hide()
-    if not pcall(testFont.SetFont, testFont, EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline) then
-        EasyExperienceBar:Print("Font not found, resetting to default")
-        EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF"
     end
 
     local levelText = frame:CreateFontString(nil, nil, "GameTooltipText")
