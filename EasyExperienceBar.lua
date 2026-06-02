@@ -650,7 +650,7 @@ end
     levelTimeText:SetText("Level Time")
 
     local sessionTimeText = frame:CreateFontString(nil, nil, "GameTooltipText")
-    sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , 05, 15)
+    sessionTimeText:SetPoint("TOPRIGHT", frame, "TOPRIGHT" , -5, 15)
     sessionTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     sessionTimeText:SetJustifyH("RIGHT")
     sessionTimeText:SetWidth(300)
