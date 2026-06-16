@@ -338,7 +338,8 @@ function EasyExperienceBar:Options()
         },
     }
     EasyExperienceBar.AceConfig:RegisterOptionsTable("EasyExperienceBar", options)
-    EasyExperienceBar.AceConfigDialog:AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
+    local _,id = EasyExperienceBar.AceConfigDialog:AddToBlizOptions("EasyExperienceBar", "EasyExperienceBar")
+    EasyExperienceBar.optionsPage = id or "EasyExperienceBar"
 end
 
 function EasyExperienceBar:ResetBar()
@@ -466,6 +467,18 @@ function EasyExperienceBar:OnInitialize()
 
     EasyExperienceBar:StoreLocation()
 
+    -- Validate custom textures
+    if C_UIFileAsset and not C_UIFileAsset.IsKnownFile(EasyExperienceBar.global.bartexture) then
+        EasyExperienceBar:Print("Bar texture not found, resetting to default")
+        EasyExperienceBar.global.bartexture = "Interface\\TargetingFrame\\UI-StatusBar"
+    end
+
+    -- Validate custom font
+    if C_UIFileAsset and not C_UIFileAsset.IsKnownFile(EasyExperienceBar.global.font) then
+        EasyExperienceBar:Print("Font not found, resetting to default")
+        EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF"
+    end
+
     EasyExperienceBar.BackgroundBar = EasyExperienceBar:CreateBackgroundBar(EasyExperienceBar.MainFrame)
     EasyExperienceBar.BackgroundBar:SetValue(100)
     EasyExperienceBar.BackgroundBar:SetFrameLevel(10)
@@ -508,6 +521,9 @@ function EasyExperienceBar:OnInitialize()
             EasyExperienceBar:StoreLocation()
         end
     end)
+
+    EasyExperienceBar:RegisterChatCommand("eeb", "OpenSettings")
+    EasyExperienceBar:RegisterChatCommand("easyexperiencebar", "OpenSettings")
 end
 
 function EasyExperienceBar:CreateTimer()
@@ -601,14 +617,6 @@ end
         fontOutline = nil
     else
         fontOutline = EasyExperienceBar.global.fontOutline
-    end
-
-    -- Ensure we do not try to use an non existant font from a previous install
-    local testFont = UIParent:CreateFontString()
-	testFont:Hide()
-    if not pcall(testFont.SetFont, testFont, EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline) then
-        EasyExperienceBar:Print("Font not found, resetting to default")
-        EasyExperienceBar.global.font = "Fonts\\FRIZQT__.TTF"
     end
 
     local levelText = frame:CreateFontString(nil, nil, "GameTooltipText")
@@ -1070,4 +1078,11 @@ function EasyExperienceBar:StoreLocation()
     EasyExperienceBar.session.location[3] = relativePoint
     EasyExperienceBar.session.location[4] = offsetX
     EasyExperienceBar.session.location[5] = offsetY
+end
+
+function EasyExperienceBar:OpenSettings(msg)
+    if not _G.InCombatLockdown() and not C_ChallengeMode.IsChallengeModeActive() 
+      and not (C_PvP.IsMatchActive and C_PvP.IsMatchActive()) and not (C_Secrets and C_Secrets.ShouldAurasBeSecret()) then
+       _G.Settings.OpenToCategory( EasyExperienceBar.optionsPage)
+    end
 end
