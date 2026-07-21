@@ -1,8 +1,8 @@
-## Interface: 11508,20506,38001,50504,120007
+## Interface: 11508,11509,20506,38001,50504,120007
 ## Title: Easy Experience Bar
 ## Notes: Experience Tracking Bar
 ## Author: FurydinWow
-## Version: 2026.07.17.A
+## Version: 2026.07.21.A
 ## SavedVariables: EasyExperienceDB
 ## Category: Quests
 ## Category-deDE: Quests
