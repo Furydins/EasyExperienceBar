@@ -63,5 +63,9 @@ L["High"] = true
 L["Dialog"] = true
 L["Reset Bar Position"] = true
 L["Resets Bar back to it's default position"] = true
+L["X Position"] = true
+L["Sets the X position of the bar"] = true
+L["Y Position"] = true
+L["Sets the Y position of the bar"] = true
 
 
