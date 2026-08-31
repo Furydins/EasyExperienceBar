@@ -310,61 +310,27 @@ function EasyExperienceBar:Options()
                 values = { ["BACKGROUND"] = L["Background"], ["LOW"] = L["Low"], ["MEDIUM"] = L["Medium"], ["HIGH"] = L["High"], ["DIALOG"] = L["Dialog"] },
                 sorting = { "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG",},
                 style = "dropdown",
-                width = "normal",
+                width = "Normal",
                 get = function(info)  return EasyExperienceBar.global.frameStrata end,
                 set = function(info,val) 
                         EasyExperienceBar.global.frameStrata = val
                         EasyExperienceBar:ChangeFrameStrata(EasyExperienceBar.global.frameStrata)
                     end,
             },
-            xPos = {
-                order = 22,
-                type = "input",
-                name = L["X Position"],
-                desc = L["Sets the X position of the bar"],
-                width = "normal",
-                get = function(info) 
-                    local _, _, _, xPos, _ = EasyExperienceBar.MainFrame:GetPointByName("TOP")
-                    EasyExperienceBar:Print("X Position: " .. tostring(xPos))
-                    return tostring(math.floor(xPos + 0.5)) 
-                end,
-                set = function(info,val)
-                    local _, _, _, _, yPos = EasyExperienceBar.MainFrame:GetPointByName("TOP")
-                    EasyExperienceBar:SetPosition(tonumber(val), tostring(yPos))
-                end
-            },
-             yPos = {
-                order = 23,
-                type = "input",
-                name = L["Y Position"],
-                desc = L["Sets the Y position of the bar"],
-                width = "normal",
-                get = function(info) 
-                    local _, _, _, _, yPos = EasyExperienceBar.MainFrame:GetPointByName("TOP")
-                    EasyExperienceBar:Print("Y Position: " .. tostring(yPos))
-                    return tostring(math.floor(yPos + 0.5)) 
-                end,
-                set = function(info,val)
-                    local _, _, _, xPos, _ = EasyExperienceBar.MainFrame:GetPointByName("TOP")
-                    EasyExperienceBar:SetPosition(xPos, tonumber(val))
-                end
-            },
             resetPos = {
-                order = 24,
+                order = 22,
                 type = "execute",
                 name = L["Reset Bar Position"],
                 desc = L["Resets Bar back to it's default position"],
-                width = "Full",
                 func =  function (info)
                             EasyExperienceBar:ResetBar()
                         end
             },
               resetTimers = {
-                order = 25,
+                order = 22,
                 type = "execute",
                 name = L["Reset Timers"],
                 desc = L["Resets Session and Level time"],
-                width = "Full",
                 func =  function (info)
                             EasyExperienceBar:ResetTimes()
                         end
@@ -1087,12 +1053,6 @@ function EasyExperienceBar:ResetTimes()
     EasyExperienceBar.session.lastSessionTotalTime = 0
     EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
     EasyExperienceBar:Update()
-end
-
-function EasyExperienceBar:SetPosition(xPos, yPos)
-    EasyExperienceBar.MainFrame:ClearAllPoints()
-    EasyExperienceBar.MainFrame:SetPoint("TOP", _G.UIParent, xPos, yPos)
-    EasyExperienceBar:StoreLocation()
 end
 
 function EasyExperienceBar:ResetBar()
