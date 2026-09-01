@@ -57,6 +57,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.fontSize == nil then EasyExperienceBar.global.fontSize = 14 end
     if EasyExperienceBar.global.classColour == nil then EasyExperienceBar.global.classColour = false end
     if EasyExperienceBar.global.frameStrata == nil then EasyExperienceBar.global.frameStrata = "BACKGROUND" end
+    if EasyExperienceBar.global.totalPlayedText == nil then EasyExperienceBar.global.totalPlayedText = false end
 
     local options = {
         name = L["Easy Experience Bar"],
@@ -90,9 +91,18 @@ function EasyExperienceBar:Options()
                     then EasyExperienceBar.global.sessionTimeText = false
                     else EasyExperienceBar.global.sessionTimeText = true end end,
             },
-            showXpHourText = {
+            totalPlayedText = {
                 type = 'toggle',
                 order = 3,
+                name = L["Total Played Time"],
+                desc = L["Show total character playtime"],
+                width = "full",
+                get = function(info) return EasyExperienceBar.global.totalPlayedText end,
+                set = function(info,val) EasyExperienceBar.global.totalPlayedText = not EasyExperienceBar.global.totalPlayedText end,
+            },
+            showXpHourText = {
+                type = 'toggle',
+                order = 4,
                 name = L["Leveling Time & XP/Hour Text"],
                 desc = L["Show an estimate of how long it takes to hit the next level"],
                 width = "full",
@@ -103,7 +113,7 @@ function EasyExperienceBar:Options()
             },
             questRestedText = {
                 type = 'toggle',
-                order = 4,
+                order = 5,
                 name = L["Completed & Rested Text"],
                 desc = L["Show how much rested XP and XP from completed quests the character has"],
                 width = "full",
@@ -114,7 +124,7 @@ function EasyExperienceBar:Options()
             },
             questBar = {
                 type = 'toggle',
-                order = 5,
+                order = 6,
                 name = L["Completed Quest XP Bar"],
                 desc = L["Show a bar indicating how much XP is available from completed quests"],
                 width = "full",
@@ -125,12 +135,12 @@ function EasyExperienceBar:Options()
             },
             header2 = {
                 type = 'header',
-                order = 6,
+                order = 7,
                 name = L["Settings"],
             },
             showMaxLevel = {
                 type = 'toggle',
-                order = 7,
+                order = 8,
                 name = L["Show Bar at Max Level"],
                 desc = L["Do not hide the bar on max level characters"],
                 width = "full",
@@ -141,7 +151,7 @@ function EasyExperienceBar:Options()
             },
             resetReload = {
                 type = 'toggle',
-                order = 8,
+                order = 9,
                 name = L["Reset Session Time and XP/Hour on Reload UI"],
                 desc = L["Do not retain stats after a /reload"],
                 width = "full",
@@ -152,7 +162,7 @@ function EasyExperienceBar:Options()
             },
             hideXPBar = {
                 type = 'toggle',
-                order = 9,
+                order = 10,
                 name = L["Hide Default Experience Bar"],
                 desc = L["Hides the standard XP bar"],
                 width = "full",
@@ -168,12 +178,12 @@ function EasyExperienceBar:Options()
             },
             header3 = {
                 type = 'header',
-                order = 10,
+                order = 11,
                 name = L["Display"],
             },
              lockBar = {
                 type = 'toggle',
-                order = 11,
+                order = 12,
                 name = L["Lock Bar"],
                 desc = L["Disables the click and drag to move function"],
                 width = "full",
@@ -187,7 +197,7 @@ function EasyExperienceBar:Options()
             },
             width = {
                 type = 'range',
-                order = 12,
+                order = 13,
                 name = L["Width"],
                 desc = L["Adjust bar width"],
                 min  = 10,
@@ -201,7 +211,7 @@ function EasyExperienceBar:Options()
             },
             height = {
                 type = 'range',
-                order = 13,
+                order = 14,
                 name = L["Height"],
                 desc = L["Adjust bar height"],
                 min  = 10,
@@ -215,7 +225,7 @@ function EasyExperienceBar:Options()
             },
             fontSize = {
                 type = 'range',
-                order = 14,
+                order = 15,
                 name = L["Font Size"],
                 desc = L["Adjust font size"],
                 min  = 5,
@@ -229,7 +239,7 @@ function EasyExperienceBar:Options()
             },
             font = {
                 type = 'select',
-                order = 15,
+                order = 16,
                 name = L["Font"],
                 desc = L["Font Selector"],
                 dialogControl = 'LSM30_Font',
@@ -251,7 +261,7 @@ function EasyExperienceBar:Options()
             },
             outline = {
                 type = 'select',
-                order = 16,
+                order = 17,
                 name = L["Text Outline"],
                 desc = L["Adds a black outline to text"],
                 values = { ["NONE"] = L["None"], ["THICKOUTLINE"] = L["Thick Outline"], ["OUTLINE"] = L["Outline"] },
@@ -266,7 +276,7 @@ function EasyExperienceBar:Options()
             },
             textures = {
                 type = 'select',
-                order = 17,
+                order = 18,
                 name = L["Bar Texture"],
                 desc = L["Selects the texture used for the bars"],
                 dialogControl = 'LSM30_Statusbar',
@@ -288,7 +298,7 @@ function EasyExperienceBar:Options()
             },
             classColour = {
                 type = 'toggle',
-                order = 18,
+                order = 19,
                 name = L["Use Class Color"],
                 desc = L["Uses the player's class color for the progress bar"],
                 width = "full",
@@ -299,12 +309,12 @@ function EasyExperienceBar:Options()
             },
             header4 = {
                 type = 'header',
-                order = 19,
+                order = 20,
                 name = L['Advanced'],
             },
             frameStrata = {
                 type = 'select',
-                order = 20,
+                order = 21,
                 name = L["FrameStrata"],
                 desc = L["Sets the Frame Level for the bar (can be used to prevent the bar from hiding 'behind' other UI elements)"],
                 values = { ["BACKGROUND"] = L["Background"], ["LOW"] = L["Low"], ["MEDIUM"] = L["Medium"], ["HIGH"] = L["High"], ["DIALOG"] = L["Dialog"] },
@@ -327,7 +337,7 @@ function EasyExperienceBar:Options()
                         end
             },
               resetTimers = {
-                order = 22,
+                order = 23,
                 type = "execute",
                 name = L["Reset Timers"],
                 desc = L["Resets Session and Level time"],
@@ -360,11 +370,12 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
 
     if "PLAYER_ENTERING_WORLD" == event then
         if arg1 or (arg2 and EasyExperienceBar.global.resetReload) then
+            _G.RequestTimePlayed()
             EasyExperienceBar.session.gainedXP = 0
             EasyExperienceBar.session.lastXP = _G.UnitXP("player") or 0
             EasyExperienceBar.session.maxXP = _G.UnitXPMax("player") or 0
-            EasyExperienceBar.session.startTime = _G.GetTime()
-            EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime
+            EasyExperienceBar.session.startTime = _G.GetServerTime()
+            EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
             EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
         end
     elseif "PLAYER_LEVEL_UP" == event then
@@ -372,8 +383,9 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
         EasyExperienceBar.isPlayerMaxLevel = EasyExperienceBar.level >= EasyExperienceBar:GetMaxLevel()
 
         EasyExperienceBar.session.realLevelTime = 0
+        EasyExperienceBar.session.lastSessionLevelTime = 0
         EasyExperienceBar.lastSessionLevelTime = 0
-        EasyExperienceBar.currentSessionLevelStart = _G.GetTime()
+        EasyExperienceBar.currentSessionLevelStart = _G.GetServerTime()
         EasyExperienceBar.session.maxXP = _G.UnitXPMax("player")
 
         if EasyExperienceBar.isMaxLevel and not EasyExperienceBar.showMaxLevel then
@@ -393,13 +405,18 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
         EasyExperienceBar.isPlayerMaxLevel = EasyExperienceBar.level >= EasyExperienceBar:GetMaxLevel(maxExpLevel)
 
         if EasyExperienceBar.level == _G.GetMaxLevelForExpansionLevel(minExpLevel) then
-            EasyExperienceBar.session.startTime = _G.GetTime()
+            EasyExperienceBar.session.startTime = _G.GetServerTime()
         end
 
         if not EasyExperienceBar.isMaxLevel then
             EasyExperienceBar:CreateTimer()
         end
     elseif "QUEST_LOG_UPDATE" == event or ("UNIT_QUEST_LOG_CHANGED" == event and arg1 == "player") then
+        EasyExperienceBar:Update()
+    elseif "TIME_PLAYED_MSG" == event then
+        --print("TIME_PLAYED_MSG", arg1, arg2)
+        EasyExperienceBar.session.realTotalTime = arg1 or 0
+        EasyExperienceBar.session.realLevelTime = arg2 or 0
         EasyExperienceBar:Update()
     elseif "PLAYER_XP_UPDATE" == event then
         local currentXP = _G.UnitXP("player") or 0
@@ -426,7 +443,7 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP or 0
     EasyExperienceBar.session.lastXP = EasyExperienceBar.session.lastXP or _G.UnitXP("player")
     EasyExperienceBar.session.maxXP = EasyExperienceBar.session.maxXP or _G.UnitXPMax("player")
-    EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetTime()
+    EasyExperienceBar.session.startTime = EasyExperienceBar.session.startTime or _G.GetServerTime()
     EasyExperienceBar.session.realTotalTime = EasyExperienceBar.session.realTotalTime or 0
     EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
 
@@ -521,7 +538,7 @@ function EasyExperienceBar:OnInitialize()
             EasyExperienceBar:StoreLocation()
         end
     end)
-
+    
     EasyExperienceBar:RegisterChatCommand("eeb", "OpenSettings")
     EasyExperienceBar:RegisterChatCommand("easyexperiencebar", "OpenSettings")
 end
@@ -539,6 +556,7 @@ function EasyExperienceBar:RegisterEvents()
     EasyExperienceBar.MainFrame:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
     EasyExperienceBar.MainFrame:RegisterEvent("PLAYER_XP_UPDATE")
     EasyExperienceBar.MainFrame:SetScript("OnEvent", EasyExperienceBar.EventHandler)
+    EasyExperienceBar.MainFrame:RegisterEvent("TIME_PLAYED_MSG")
 end
 
 function EasyExperienceBar:CreateProgressBar(parent)
@@ -656,6 +674,13 @@ end
     sessionTimeText:SetWidth(300)
     sessionTimeText:SetText("Session Time")
 
+    local totalPlayedText = frame:CreateFontString(nil, nil, "GameTooltipText")
+    totalPlayedText:SetPoint("TOP", frame, "TOP", 0, 15)
+    totalPlayedText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+    totalPlayedText:SetWidth(300)
+    totalPlayedText:SetJustifyH("CENTER")
+    totalPlayedText:SetText("Played Time")
+
     local timeToLevelText = frame:CreateFontString(nil, nil, "GameTooltipText")
     timeToLevelText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT" , 5, -20)
     timeToLevelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
@@ -677,6 +702,7 @@ end
              percentText = percentText,
              levelTimeText = levelTimeText,
              sessionTimeText = sessionTimeText,
+             totalPlayedText = totalPlayedText,
              timeToLevelText = timeToLevelText,
              statText = statText, }
  end
@@ -793,6 +819,7 @@ function EasyExperienceBar:UpdateTexts()
     textDisplays.statText:SetText(textValues.c5)
     textDisplays.levelTimeText:SetText(textValues.c6)
     textDisplays.sessionTimeText:SetText(textValues.c7)
+    textDisplays.totalPlayedText:SetText(textValues.c8)
 end
 
 
@@ -800,7 +827,7 @@ function EasyExperienceBar:CalculateValues()
     local level = _G.UnitLevel("player")
     local totalTime = EasyExperienceBar.session.realTotalTime or 0
     local levelTime = EasyExperienceBar.session.realLevelTime or 0
-    local currentTime = _G.GetTime()
+    local currentTime = _G.GetServerTime()
     local hourlyXP, timeToLevel = 0, 0
     local gainedXP = EasyExperienceBar.session.gainedXP or 0
     local currentXP = _G.UnitXP("player") or 0
@@ -812,11 +839,14 @@ function EasyExperienceBar:CalculateValues()
     local incompleteXP = EasyExperienceBar.incompleteXP or 0
 
     if EasyExperienceBar.global.levelTimeText  then
-        totalTime = (currentTime - EasyExperienceBar.currentTotalTimeStart) +
-                      EasyExperienceBar.session.lastSessionTotalTime
-        levelTime = (currentTime - EasyExperienceBar.currentSessionLevelStart) +
-                   EasyExperienceBar.lastSessionLevelTime
-        EasyExperienceBar.session.lastSessionLevelTime = levelTime
+        -- Direkte Werte aus TIME_PLAYED_MSG verwenden
+        totalTime = EasyExperienceBar.session.realTotalTime or 0
+        levelTime = EasyExperienceBar.session.realLevelTime or 0
+        --totalTime = (currentTime - EasyExperienceBar.currentTotalTimeStart) +
+        --              EasyExperienceBar.session.lastSessionTotalTime
+        --levelTime = (currentTime - EasyExperienceBar.currentSessionLevelStart) +
+        --           EasyExperienceBar.lastSessionLevelTime
+        --EasyExperienceBar.session.lastSessionLevelTime = levelTime
     end
 
     EasyExperienceBar.session.realLevelTime = levelTime
@@ -867,6 +897,8 @@ function EasyExperienceBar:CalculateValues()
         percentcomplete = totalXP > 0 and ((completeXP / totalXP) * 100) or 0,
         percentincomplete = totalXP > 0 and ((incompleteXP / totalXP) * 100) or 0,
         totalpercentcomplete = totalXP > 0 and (((completeXP + currentXP) / totalXP) * 100) or 0,
+        playedTime = EasyExperienceBar.session.realTotalTime or 0,
+        playedTimeText = EasyExperienceBar:FormatTime(EasyExperienceBar.session.realTotalTime or 0),
     }
 
     local questXP = 0
@@ -879,6 +911,7 @@ function EasyExperienceBar:CalculateValues()
          questXP + allstates.percentrested, 100))
 
     EasyExperienceBar:UpdateCustomTexts(allstates)
+
 
     return true
 end
@@ -984,10 +1017,11 @@ EasyExperienceBar.customTexts = {
     c5 = "",
     c6 = "",
     c7 = "",
+    c8 = "",
 }
 
 function EasyExperienceBar:UpdateCustomTexts(state)
-    local c1, c2, c3, c4, c5, c6, c7
+    local c1, c2, c3, c4, c5, c6, c7, c8
     local s = state or EasyExperienceBar.state
     local isMaxLevel = EasyExperienceBar.isPlayerMaxLevel
 
@@ -1031,6 +1065,12 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         c7 = L["Time this session:"] .. " " .. (s.sessionTimeText or "")
     end
 
+    if EasyExperienceBar.global.totalPlayedText then
+        c8 = L["Played: "] .. (s.playedTimeText or "")
+    else 
+        c8 = "" 
+    end
+
     EasyExperienceBar.customTexts = {
         c1 = c1,
         c2 = c2,
@@ -1039,6 +1079,7 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         c5 = c5,
         c6 = c6,
         c7 = c7,
+        c8 = c8,
     }
 end
 
@@ -1046,7 +1087,7 @@ function EasyExperienceBar:ResetTimes()
     EasyExperienceBar.session.gainedXP = 0
     EasyExperienceBar.session.lastXP = _G.UnitXP("player") or 0
     EasyExperienceBar.session.maxXP = _G.UnitXPMax("player") or 0
-    EasyExperienceBar.session.startTime = _G.GetTime()
+    EasyExperienceBar.session.startTime = _G.GetServerTime()
     EasyExperienceBar.session.lastSessionLevelTime = 0
     EasyExperienceBar.lastSessionLevelTime = 0
     EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime

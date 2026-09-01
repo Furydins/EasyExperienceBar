@@ -63,5 +63,8 @@ L["High"] = true
 L["Dialog"] = true
 L["Reset Bar Position"] = true
 L["Resets Bar back to it's default position"] = true
+L["Total Played Time"] = true
+L["Show total character playtime"] = true
+L["Played: "] = true
 
 
