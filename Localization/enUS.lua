@@ -66,5 +66,6 @@ L["Resets Bar back to it's default position"] = true
 L["Total Played Time"] = true
 L["Show total character playtime"] = true
 L["Played: "] = true
+L["XP/HourShort"] = "XP/h"
 
 

@@ -10,6 +10,48 @@ EasyExperienceBar.LSM = _G.LibStub("LibSharedMedia-3.0")
 EasyExperienceBar.MainFrame = nil
 EasyExperienceBar.ProgressBar = nil
 EasyExperienceBar.sessionTime = 0
+EasyExperienceBar.XPTables = EasyExperienceBar.XPTables or {}
+EasyExperienceBar.TotalXPToLevel = {}
+
+function EasyExperienceBar:GetXPTable()
+    local projectId = _G.WOW_PROJECT_ID or _G.WOW_PROJECT_MAINLINE
+    local maxLevel = _G.GetMaxPlayerLevel() or _G.UnitLevel("player") or 1
+
+    if projectId == _G.WOW_PROJECT_CLASSIC then
+        if maxLevel <= 60 then
+            return EasyExperienceBar.XPTables.vanillaEra or EasyExperienceBar.XPTables.classic or {}
+        elseif maxLevel <= 70 then
+            return EasyExperienceBar.XPTables.burningCrusadeClassic or EasyExperienceBar.XPTables.vanillaEra or {}
+        elseif maxLevel <= 80 then
+            return EasyExperienceBar.XPTables.wrathClassic or EasyExperienceBar.XPTables.burningCrusadeClassic or {}
+        elseif maxLevel <= 85 then
+            return EasyExperienceBar.XPTables.cataclysmClassic or EasyExperienceBar.XPTables.wrathClassic or {}
+        elseif maxLevel <= 90 then
+            return EasyExperienceBar.XPTables.mistsClassic or EasyExperienceBar.XPTables.cataclysmClassic or {}
+        end
+    end
+
+    return EasyExperienceBar.XPTables.retail or EasyExperienceBar.XPTables.mainline or EasyExperienceBar.XPTables.vanillaEra or {}
+end
+
+function EasyExperienceBar:BuildTotalXPTable()
+    local xpTable = self:GetXPTable()
+    local runningTotal = 0
+
+    EasyExperienceBar.TotalXPToLevel = {}
+
+    for level = 1, #xpTable do
+        EasyExperienceBar.TotalXPToLevel[level] = runningTotal
+        runningTotal = runningTotal + (xpTable[level] or 0)
+    end
+end
+
+function EasyExperienceBar:GetLifetimeXP()
+    local level = _G.UnitLevel("player")
+    local currentXP = _G.UnitXP("player") or 0
+
+    return (EasyExperienceBar.TotalXPToLevel[level] or 0) + currentXP
+end
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EasyExperienceBar")
 
@@ -369,6 +411,7 @@ end
 function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...)
 
     if "PLAYER_ENTERING_WORLD" == event then
+        EasyExperienceBar:BuildTotalXPTable()
         if arg1 or (arg2 and EasyExperienceBar.global.resetReload) then
             _G.RequestTimePlayed()
             EasyExperienceBar.session.gainedXP = 0
@@ -379,6 +422,7 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
             EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
         end
     elseif "PLAYER_LEVEL_UP" == event then
+        EasyExperienceBar:BuildTotalXPTable()
         EasyExperienceBar.level = arg1 or EasyExperienceBar.level
         EasyExperienceBar.isPlayerMaxLevel = EasyExperienceBar.level >= EasyExperienceBar:GetMaxLevel()
 
@@ -454,7 +498,8 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
 
     EasyExperienceBar.global = EasyExperienceBar.sessionDB.global
-    
+    EasyExperienceBar:BuildTotalXPTable()
+
     EasyExperienceBar:Options()
 
     local width = EasyExperienceBar.global.barWidth or 600
@@ -696,6 +741,12 @@ end
     statText:SetWidth(280)
     statText:SetText("Stats")
 
+    local lifetimeXPText = frame:CreateFontString(nil, nil, "GameTooltipText")
+    lifetimeXPText:SetPoint("BOTTOM", frame, "BOTTOM", 0, -35)
+    lifetimeXPText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+    lifetimeXPText:SetWidth(300)
+    lifetimeXPText:SetJustifyH("CENTER")
+    lifetimeXPText:SetText("Lifetime XP/h")
 
     return { levelText = levelText,
              progressText = progressText,
@@ -704,7 +755,8 @@ end
              sessionTimeText = sessionTimeText,
              totalPlayedText = totalPlayedText,
              timeToLevelText = timeToLevelText,
-             statText = statText, }
+             statText = statText,
+             lifetimeXPText = lifetimeXPText, }
  end
 
 function EasyExperienceBar:Resize()
@@ -727,6 +779,7 @@ function EasyExperienceBar:Resize()
     EasyExperienceBar.Texts.sessionTimeText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     EasyExperienceBar.Texts.timeToLevelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     EasyExperienceBar.Texts.statText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+    EasyExperienceBar.Texts.lifetimeXPText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize - 1, fontOutline)
 end
 
 
@@ -745,6 +798,7 @@ function EasyExperienceBar:ChangeFont(font)
         EasyExperienceBar.Texts.sessionTimeText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
         EasyExperienceBar.Texts.timeToLevelText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
         EasyExperienceBar.Texts.statText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
+        EasyExperienceBar.Texts.lifetimeXPText:SetFont(font, EasyExperienceBar.global.fontSize - 1, fontOutline)
     end
 end
 
@@ -820,6 +874,7 @@ function EasyExperienceBar:UpdateTexts()
     textDisplays.levelTimeText:SetText(textValues.c6)
     textDisplays.sessionTimeText:SetText(textValues.c7)
     textDisplays.totalPlayedText:SetText(textValues.c8)
+    textDisplays.lifetimeXPText:SetText(textValues.c9)
 end
 
 
@@ -837,6 +892,12 @@ function EasyExperienceBar:CalculateValues()
     local questXP = EasyExperienceBar.questXP or 0
     local completeXP = EasyExperienceBar.completeXP or 0
     local incompleteXP = EasyExperienceBar.incompleteXP or 0
+    local lifetimeXP = EasyExperienceBar:GetLifetimeXP()
+    local lifetimeXPH = 0
+
+    if totalTime > 0 then
+        lifetimeXPH = math.floor(lifetimeXP / (totalTime / 3600))
+    end
 
     if EasyExperienceBar.global.levelTimeText  then
         -- Direkte Werte aus TIME_PLAYED_MSG verwenden
@@ -890,6 +951,8 @@ function EasyExperienceBar:CalculateValues()
         levelTimeText = EasyExperienceBar:FormatTime(levelTime),
         sessionTime = EasyExperienceBar.sessionTime,
         sessionTimeText = EasyExperienceBar:FormatTime(EasyExperienceBar.sessionTime),
+        lifetimeXP = lifetimeXP,
+        lifetimeXPH = lifetimeXPH,
         percentXP = totalXP > 0 and ((currentXP / totalXP) * 100) or 0,
         percentremaining = totalXP > 0 and ((remainingXP / totalXP) * 100) or 0,
         percentrested = totalXP > 0 and ((restedXP / totalXP) * 100) or 0,
@@ -1018,10 +1081,11 @@ EasyExperienceBar.customTexts = {
     c6 = "",
     c7 = "",
     c8 = "",
+    c9 = "",
 }
 
 function EasyExperienceBar:UpdateCustomTexts(state)
-    local c1, c2, c3, c4, c5, c6, c7, c8
+    local c1, c2, c3, c4, c5, c6, c7, c8, c9
     local s = state or EasyExperienceBar.state
     local isMaxLevel = EasyExperienceBar.isPlayerMaxLevel
 
@@ -1066,10 +1130,31 @@ function EasyExperienceBar:UpdateCustomTexts(state)
     end
 
     if EasyExperienceBar.global.totalPlayedText then
-        c8 = L["Played: "] .. (s.playedTimeText or "")
+        local lifetimeXPH = s.lifetimeXPH or 0
+        local lifetimeValue = lifetimeXPH > 0 and (lifetimeXPH / 1000) or 0
+        local lifetimeDisplay = "0.0k"
+        local locale = _G.GetLocale() or "enUS"
+
+        if lifetimeXPH > 0 then
+            lifetimeDisplay = string.format("%.1f", lifetimeValue)
+            if locale and locale:lower():match("de") then
+                lifetimeDisplay = lifetimeDisplay:gsub("%.", ",")
+            end
+            lifetimeDisplay = lifetimeDisplay .. "k"
+        end
+
+        local xpHourShort = L["XP/HourShort"] or L["XP/Hour"] or "XP/h"
+        if locale and locale:lower():match("de") then
+            xpHourShort = L["XP/HourShort"] or "EP/h"
+        end
+
+        c8 = string.format("%s%s ( %sk %s )", L["Played: "] or "Played: ", s.playedTimeText or "", lifetimeDisplay:gsub("k$", ""), xpHourShort)
+        c8 = c8:gsub("%s+%)", ")")
     else 
         c8 = "" 
     end
+
+    c9 = ""
 
     EasyExperienceBar.customTexts = {
         c1 = c1,
@@ -1080,6 +1165,7 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         c6 = c6,
         c7 = c7,
         c8 = c8,
+        c9 = c9,
     }
 end
 

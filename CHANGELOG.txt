@@ -1,2 +1,1 @@
-- Added German translations (zeachiean)
-- Updated Brazilan Portugese translations (Denshi_KRS)
+- Added xp/h for playtime
