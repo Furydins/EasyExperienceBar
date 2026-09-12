@@ -100,6 +100,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.classColour == nil then EasyExperienceBar.global.classColour = false end
     if EasyExperienceBar.global.frameStrata == nil then EasyExperienceBar.global.frameStrata = "BACKGROUND" end
     if EasyExperienceBar.global.totalPlayedText == nil then EasyExperienceBar.global.totalPlayedText = false end
+    if EasyExperienceBar.global.hidePetBattle == nil then EasyExperienceBar.global.hidePetBattle = false end
 
     local options = {
         name = L["Easy Experience Bar"],
@@ -191,9 +192,24 @@ function EasyExperienceBar:Options()
                     then EasyExperienceBar.global.showMaxLevel = false
                     else EasyExperienceBar.global.showMaxLevel = true end end,
             },
-            resetReload = {
+            hidePetBattle = {
                 type = 'toggle',
                 order = 9,
+                name = L["Hide Bar in Pet Battles"],
+                desc = L["Hides the experience bar during pet battles"],
+                hidden = function() 
+                    local _, _, _, interfaceVersion = _G.GetBuildInfo()
+                    return interfaceVersion < 50000
+                end,
+                width = "full",
+                get = function(info)  return EasyExperienceBar.global.hidePetBattle end,
+                set = function(info,val) if EasyExperienceBar.global.hidePetBattle
+                    then EasyExperienceBar.global.hidePetBattle = false
+                    else EasyExperienceBar.global.hidePetBattle = true end end,
+            },
+            resetReload = {
+                type = 'toggle',
+                order = 10,
                 name = L["Reset Session Time and XP/Hour on Reload UI"],
                 desc = L["Do not retain stats after a /reload"],
                 width = "full",
@@ -204,7 +220,7 @@ function EasyExperienceBar:Options()
             },
             hideXPBar = {
                 type = 'toggle',
-                order = 10,
+                order = 11,
                 name = L["Hide Default Experience Bar"],
                 desc = L["Hides the standard XP bar"],
                 width = "full",
@@ -220,12 +236,12 @@ function EasyExperienceBar:Options()
             },
             header3 = {
                 type = 'header',
-                order = 11,
+                order = 12,
                 name = L["Display"],
             },
              lockBar = {
                 type = 'toggle',
-                order = 12,
+                order = 13,
                 name = L["Lock Bar"],
                 desc = L["Disables the click and drag to move function"],
                 width = "full",
@@ -239,7 +255,7 @@ function EasyExperienceBar:Options()
             },
             width = {
                 type = 'range',
-                order = 13,
+                order = 14,
                 name = L["Width"],
                 desc = L["Adjust bar width"],
                 min  = 10,
@@ -253,7 +269,7 @@ function EasyExperienceBar:Options()
             },
             height = {
                 type = 'range',
-                order = 14,
+                order = 15,
                 name = L["Height"],
                 desc = L["Adjust bar height"],
                 min  = 10,
@@ -267,7 +283,7 @@ function EasyExperienceBar:Options()
             },
             fontSize = {
                 type = 'range',
-                order = 15,
+                order = 16,
                 name = L["Font Size"],
                 desc = L["Adjust font size"],
                 min  = 5,
@@ -281,7 +297,7 @@ function EasyExperienceBar:Options()
             },
             font = {
                 type = 'select',
-                order = 16,
+                order = 17,
                 name = L["Font"],
                 desc = L["Font Selector"],
                 dialogControl = 'LSM30_Font',
@@ -303,7 +319,7 @@ function EasyExperienceBar:Options()
             },
             outline = {
                 type = 'select',
-                order = 17,
+                order = 18,
                 name = L["Text Outline"],
                 desc = L["Adds a black outline to text"],
                 values = { ["NONE"] = L["None"], ["THICKOUTLINE"] = L["Thick Outline"], ["OUTLINE"] = L["Outline"] },
@@ -318,7 +334,7 @@ function EasyExperienceBar:Options()
             },
             textures = {
                 type = 'select',
-                order = 18,
+                order = 19,
                 name = L["Bar Texture"],
                 desc = L["Selects the texture used for the bars"],
                 dialogControl = 'LSM30_Statusbar',
@@ -340,7 +356,7 @@ function EasyExperienceBar:Options()
             },
             classColour = {
                 type = 'toggle',
-                order = 19,
+                order = 20,
                 name = L["Use Class Color"],
                 desc = L["Uses the player's class color for the progress bar"],
                 width = "full",
@@ -351,12 +367,12 @@ function EasyExperienceBar:Options()
             },
             header4 = {
                 type = 'header',
-                order = 20,
+                order = 21,
                 name = L['Advanced'],
             },
             frameStrata = {
                 type = 'select',
-                order = 21,
+                order = 22,
                 name = L["FrameStrata"],
                 desc = L["Sets the Frame Level for the bar (can be used to prevent the bar from hiding 'behind' other UI elements)"],
                 values = { ["BACKGROUND"] = L["Background"], ["LOW"] = L["Low"], ["MEDIUM"] = L["Medium"], ["HIGH"] = L["High"], ["DIALOG"] = L["Dialog"] },
@@ -370,7 +386,7 @@ function EasyExperienceBar:Options()
                     end,
             },
             resetPos = {
-                order = 22,
+                order = 23,
                 type = "execute",
                 name = L["Reset Bar Position"],
                 desc = L["Resets Bar back to it's default position"],
@@ -379,7 +395,7 @@ function EasyExperienceBar:Options()
                         end
             },
               resetTimers = {
-                order = 23,
+                order = 24,
                 type = "execute",
                 name = L["Reset Timers"],
                 desc = L["Resets Session and Level time"],
@@ -474,6 +490,10 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
         EasyExperienceBar.session.gainedXP = EasyExperienceBar.session.gainedXP + gainedXP
         EasyExperienceBar.session.lastXP = currentXP
         EasyExperienceBar.session.maxXP = _G.UnitXPMax("player") or 0
+        EasyExperienceBar:Update()
+    elseif "PET_BATTLE_OPENING_START" == event then
+        EasyExperienceBar:Update()
+    elseif "PET_BATTLE_CLOSE" == event then
         EasyExperienceBar:Update()
     end
 end
@@ -602,6 +622,8 @@ function EasyExperienceBar:RegisterEvents()
     EasyExperienceBar.MainFrame:RegisterEvent("PLAYER_XP_UPDATE")
     EasyExperienceBar.MainFrame:SetScript("OnEvent", EasyExperienceBar.EventHandler)
     EasyExperienceBar.MainFrame:RegisterEvent("TIME_PLAYED_MSG")
+    EasyExperienceBar.MainFrame:RegisterEvent("PET_BATTLE_OPENING_START")
+    EasyExperienceBar.MainFrame:RegisterEvent("PET_BATTLE_CLOSE")
 end
 
 function EasyExperienceBar:CreateProgressBar(parent)
@@ -839,8 +861,17 @@ function EasyExperienceBar:ChangeTexture(bartexture)
     end
 end
 
+function EasyExperienceBar:PetBattleHide()
+    if _G.C_PetBattles and _G.C_PetBattles.IsInBattle() then
+       return EasyExperienceBar.global.hidePetBattle
+    else
+        return false
+    end
+   
+end
+
  function EasyExperienceBar:Update()
-     local show = not EasyExperienceBar.isPlayerMaxLevel or EasyExperienceBar.global.showMaxLevel
+     local show = (not EasyExperienceBar.isPlayerMaxLevel or EasyExperienceBar.global.showMaxLevel) and not EasyExperienceBar:PetBattleHide()
 
     if show then
         if not EasyExperienceBar.BackgroundBar:IsShown() then
@@ -1213,3 +1244,4 @@ function EasyExperienceBar:OpenSettings(msg)
        _G.Settings.OpenToCategory( EasyExperienceBar.optionsPage)
     end
 end
+
