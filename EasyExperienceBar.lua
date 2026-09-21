@@ -369,7 +369,6 @@ function EasyExperienceBar:Options()
 end
 
 function EasyExperienceBar:ResetXPBar()
-    EasyExperienceBar.Print("Resetting Bar Position")
     if EasyExperienceBar.global.showMaxLevel and EasyExperienceBar.UpdateTimer and
         not EasyExperienceBar.UpdateTimer:IsCancelled() then
         EasyExperienceBar:CreateTimer()
@@ -783,7 +782,7 @@ function EasyExperienceBar:ChangeTexture(bartexture)
     if EasyExperienceBar.global.classColour then
         local colourRgb
         if  C_ClassColor then
-           colourRgb = C_ClassColor.GetClassColor( _G.UnitClass("player"))
+           colourRgb = C_ClassColor.GetClassColor((_G.select(2, _G.UnitClass("player"))))
         else
            colourRgb =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
         end
