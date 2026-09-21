@@ -579,6 +579,8 @@ function EasyExperienceBar:RegisterEvents()
     EasyExperienceBar.MainFrame:RegisterEvent("TIME_PLAYED_MSG")
     EasyExperienceBar.MainFrame:RegisterEvent("PET_BATTLE_OPENING_START")
     EasyExperienceBar.MainFrame:RegisterEvent("PET_BATTLE_CLOSE")
+
+     EasyExperienceBar.UpdateTimer = _G.C_Timer.NewTicker(60, function() _G.RequestTimePlayed() end)
 end
 
 function EasyExperienceBar:CreateProgressBar(parent)
