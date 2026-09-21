@@ -189,7 +189,7 @@ function EasyExperienceBar:Options()
                                          else
                                             EasyExperienceBar.global.hideXpBar = true
                                          end
-                                         EasyExperienceBar:ResetBar()
+                                         EasyExperienceBar:ResetXPBar()
                     end,
             },
             header3 = {
@@ -368,18 +368,19 @@ function EasyExperienceBar:Options()
     EasyExperienceBar.optionsPage = id or "EasyExperienceBar"
 end
 
-function EasyExperienceBar:ResetBar()
-        if EasyExperienceBar.global.showMaxLevel and EasyExperienceBar.UpdateTimer and
-            not EasyExperienceBar.UpdateTimer:IsCancelled() then
-            EasyExperienceBar:CreateTimer()
+function EasyExperienceBar:ResetXPBar()
+    EasyExperienceBar.Print("Resetting Bar Position")
+    if EasyExperienceBar.global.showMaxLevel and EasyExperienceBar.UpdateTimer and
+        not EasyExperienceBar.UpdateTimer:IsCancelled() then
+        EasyExperienceBar:CreateTimer()
+    end
+    if _G.StatusTrackingBarManager then
+        if EasyExperienceBar.global.hideXpBar then
+            _G.StatusTrackingBarManager:Hide()
+        else
+            _G.UIParent.Show(_G.StatusTrackingBarManager)
         end
-        if _G.StatusTrackingBarManager then
-            if EasyExperienceBar.global.hideXpBar then
-                _G.StatusTrackingBarManager:Hide()
-            else
-                 _G.UIParent.Show(_G.StatusTrackingBarManager)
-            end
-        end
+    end
 end
 
 function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...)
