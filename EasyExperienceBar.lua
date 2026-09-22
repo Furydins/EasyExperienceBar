@@ -433,6 +433,8 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
         --print("TIME_PLAYED_MSG", arg1, arg2)
         EasyExperienceBar.session.realTotalTime = arg1 or 0
         EasyExperienceBar.session.realLevelTime = arg2 or 0
+        EasyExperienceBar.session.lastSessionLevelTime = arg2 or EasyExperienceBar.session.lastSessionLevelTime
+        EasyExperienceBar.session.lastSessionTotalTime = arg1 or EasyExperienceBar.session.lastSessionTotalTime 
         EasyExperienceBar:Update()
     elseif "PLAYER_XP_UPDATE" == event then
         local currentXP = _G.UnitXP("player") or 0
@@ -579,6 +581,7 @@ function EasyExperienceBar:RegisterEvents()
     EasyExperienceBar.MainFrame:RegisterEvent("TIME_PLAYED_MSG")
     EasyExperienceBar.MainFrame:RegisterEvent("PET_BATTLE_OPENING_START")
     EasyExperienceBar.MainFrame:RegisterEvent("PET_BATTLE_CLOSE")
+
 end
 
 function EasyExperienceBar:CreateProgressBar(parent)
@@ -873,11 +876,11 @@ function EasyExperienceBar:CalculateValues()
         -- Direkte Werte aus TIME_PLAYED_MSG verwenden
         totalTime = EasyExperienceBar.session.realTotalTime or 0
         levelTime = EasyExperienceBar.session.realLevelTime or 0
-        --totalTime = (currentTime - EasyExperienceBar.currentTotalTimeStart) +
-        --              EasyExperienceBar.session.lastSessionTotalTime
-        --levelTime = (currentTime - EasyExperienceBar.currentSessionLevelStart) +
-        --           EasyExperienceBar.lastSessionLevelTime
-        --EasyExperienceBar.session.lastSessionLevelTime = levelTime
+        totalTime = (currentTime - EasyExperienceBar.currentTotalTimeStart) +
+                      EasyExperienceBar.session.lastSessionTotalTime
+        levelTime = (currentTime - EasyExperienceBar.currentSessionLevelStart) +
+                   EasyExperienceBar.lastSessionLevelTime
+        EasyExperienceBar.session.lastSessionLevelTime = levelTime
     end
 
     EasyExperienceBar.session.realLevelTime = levelTime
