@@ -30,3 +30,9 @@ Libs\AceLocale-3.0\AceLocale-3.0.xml
 Localization\Locales.xml
 
 EasyExperienceBar.lua
+XPTables\VanillaEra.lua
+XPTables\BurningCrusadeClassic.lua
+XPTables\WrathClassic.lua
+XPTables\CataclysmClassic.lua
+XPTables\MistsClassic.lua
+XPTables\Retail.lua
