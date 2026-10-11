@@ -590,10 +590,11 @@ function EasyExperienceBar:CreateProgressBar(parent)
 
     if EasyExperienceBar.global.classColour then
         local colourRgb
+        local _ class, _ = _G.UnitClass("player")   
         if  C_ClassColor then
-            colourRgb =  C_ClassColor.GetClassColor(_G.select(2, _G.UnitClass("player")))
+            colourRgb =  C_ClassColor.GetClassColor(class)
         else
-           colourRgb =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
+           colourRgb =  RAID_CLASS_COLORS[class]
         end
         startColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
         endColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
@@ -784,10 +785,11 @@ function EasyExperienceBar:ChangeTexture(bartexture)
 
     if EasyExperienceBar.global.classColour then
         local colourRgb
+        local _ class, _ = _G.UnitClass("player")   
         if  C_ClassColor then
-           colourRgb = C_ClassColor.GetClassColor((_G.select(2, _G.UnitClass("player"))))
+           colourRgb = C_ClassColor.GetClassColor(class)
         else
-           colourRgb =  RAID_CLASS_COLORS[_G.select(2, _G.UnitClass("player"))]
+           colourRgb =  RAID_CLASS_COLORS[class]
         end
         startColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
         endColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
