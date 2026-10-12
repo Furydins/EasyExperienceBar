@@ -13,6 +13,45 @@ EasyExperienceBar.sessionTime = 0
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EasyExperienceBar")
 
+-- Default Dark Mode palette: a desaturated set that keeps the bar readable
+-- against dark UI themes. Every colour can be overridden in the options.
+EasyExperienceBar.darkDefaults = {
+    progress   = { r = 0.54901960784314, g = 0.45490196078431, b = 0.45490196078431, a = 1 },
+    background = { r = 0.18039215686275, g = 0.16078431372549, b = 0.16078431372549, a = 0.9 },
+    rested     = { r = 0.54901960784314, g = 0.45490196078431, b = 0.45490196078431, a = 0.35 },
+    quest      = { r = 0.65882352941176, g = 0.08627450980392, b = 0.08627450980392, a = 1 },
+    text       = { r = 0.90196078431373, g = 0.87058823529412, b = 0.87058823529412, a = 1 },
+}
+
+-- @returns the colour for a bar part while Dark Mode is on, nil otherwise
+function EasyExperienceBar:GetDarkColour(part)
+    if not EasyExperienceBar.global.darkMode then
+        return nil
+    end
+    local custom = EasyExperienceBar.global.darkColours
+    return (custom and custom[part]) or EasyExperienceBar.darkDefaults[part]
+end
+
+-- @returns a colour escape matching a bar part, tinted towards white so the
+-- text stays readable, or the given default while Dark Mode is off
+function EasyExperienceBar:GetTextColourCode(part, default)
+    local colour = EasyExperienceBar:GetDarkColour(part)
+    if not colour then
+        return default
+    end
+
+    local r, g, b = colour.r, colour.g, colour.b
+    local luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    if luminance < 0.55 then
+        local tint = (0.55 - luminance) / (1 - luminance)
+        r = r + (1 - r) * tint
+        g = g + (1 - g) * tint
+        b = b + (1 - b) * tint
+    end
+
+    return string.format("|cFF%02X%02X%02X", Round(r * 255), Round(g * 255), Round(b * 255))
+end
+
 function EasyExperienceBar:GetMaxLevel(exp)
     exp = exp or _G.GetExpansionLevel()
 
@@ -59,6 +98,28 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.frameStrata == nil then EasyExperienceBar.global.frameStrata = "BACKGROUND" end
     if EasyExperienceBar.global.totalPlayedText == nil then EasyExperienceBar.global.totalPlayedText = false end
     if EasyExperienceBar.global.hidePetBattle == nil then EasyExperienceBar.global.hidePetBattle = false end
+    if EasyExperienceBar.global.darkMode == nil then EasyExperienceBar.global.darkMode = false end
+    if EasyExperienceBar.global.darkColours == nil then EasyExperienceBar.global.darkColours = {} end
+
+    local function darkColourOption(part, order, name, desc)
+        return {
+            type = 'color',
+            order = order,
+            name = name,
+            desc = desc,
+            hasAlpha = true,
+            width = "normal",
+            disabled = function() return not EasyExperienceBar.global.darkMode end,
+            get = function(info)
+                local colour = EasyExperienceBar.global.darkColours[part] or EasyExperienceBar.darkDefaults[part]
+                return colour.r, colour.g, colour.b, colour.a
+            end,
+            set = function(info, r, g, b, a)
+                EasyExperienceBar.global.darkColours[part] = { r = r, g = g, b = b, a = a }
+                EasyExperienceBar:ApplyColours()
+            end,
+        }
+    end
 
     local options = {
         name = L["Easy Experience Bar"],
@@ -323,6 +384,39 @@ function EasyExperienceBar:Options()
                      EasyExperienceBar:ChangeTexture(EasyExperienceBar.global.bartexture)
                     end,
             },
+            darkMode = {
+                type = 'toggle',
+                order = 20.1,
+                name = L["Dark Mode"],
+                desc = L["Recolors the bars with a muted dark palette"],
+                width = "full",
+                get = function(info)  return EasyExperienceBar.global.darkMode end,
+                set = function(info,val) EasyExperienceBar.global.darkMode = val
+                     EasyExperienceBar:ApplyColours()
+                    end,
+            },
+            darkProgress = darkColourOption("progress", 20.2, L["Progress Color"],
+                L["Color of the filled experience bar (ignored while Use Class Color is on)"]),
+            darkBackground = darkColourOption("background", 20.3, L["Background Color"],
+                L["Color of the empty part of the bar"]),
+            darkRested = darkColourOption("rested", 20.4, L["Rested Color"],
+                L["Color of the rested experience overlay"]),
+            darkQuest = darkColourOption("quest", 20.5, L["Quest Color"],
+                L["Color of the completed quest experience overlay"]),
+            darkText = darkColourOption("text", 20.6, L["Text Color"],
+                L["Color of every text on the bar"]),
+            darkReset = {
+                type = 'execute',
+                order = 20.7,
+                name = L["Reset Dark Mode Colors"],
+                desc = L["Restores the default Dark Mode colors"],
+                width = "normal",
+                disabled = function() return not EasyExperienceBar.global.darkMode end,
+                func = function(info)
+                    _G.wipe(EasyExperienceBar.global.darkColours)
+                    EasyExperienceBar:ApplyColours()
+                end,
+            },
             header4 = {
                 type = 'header',
                 order = 21,
@@ -539,6 +633,7 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.ProgressBar:Show()
 
     EasyExperienceBar.Texts = EasyExperienceBar:CreateTexts(EasyExperienceBar.ProgressBar)
+    EasyExperienceBar:ApplyTextColours()
 
     if not EasyExperienceBar.isMaxLevel then
         EasyExperienceBar:CreateTimer()
@@ -584,21 +679,31 @@ function EasyExperienceBar:RegisterEvents()
 
 end
 
-function EasyExperienceBar:CreateProgressBar(parent)
-    local startColour = _G.CreateColor(0.335, 0.388, 1.0)
-    local endColour =  _G.CreateColor(0.773, 0.380, 1.0)
-
+-- @returns gradient start and end colour for the progress bar
+function EasyExperienceBar:GetProgressColours()
     if EasyExperienceBar.global.classColour then
         local colourRgb
         local _ class, _ = _G.UnitClass("player")   
         if  C_ClassColor then
-            colourRgb =  C_ClassColor.GetClassColor(class)
+            colourRgb =  C_ClassColor.GetClassColor((_G.select(2, _G.UnitClass("player"))))
         else
            colourRgb =  RAID_CLASS_COLORS[class]
         end
-        startColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
-        endColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
+        return _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b),
+               _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
     end
+
+    local dark = EasyExperienceBar:GetDarkColour("progress")
+    if dark then
+        return _G.CreateColor(dark.r, dark.g, dark.b, dark.a),
+               _G.CreateColor(dark.r, dark.g, dark.b, dark.a)
+    end
+
+    return _G.CreateColor(0.335, 0.388, 1.0), _G.CreateColor(0.773, 0.380, 1.0)
+end
+
+function EasyExperienceBar:CreateProgressBar(parent)
+    local startColour, endColour = EasyExperienceBar:GetProgressColours()
 
     local progressBar = _G.CreateFrame("StatusBar", nil, EasyExperienceBar.MainFrame,
                 _G.BackdropTemplateMixin and "BackdropTemplate")
@@ -623,7 +728,12 @@ function EasyExperienceBar:CreateBackgroundBar(parent, scale)
     backgroundBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
 
     backgroundBar:SetStatusBarTexture("Interface/Buttons/WHITE8X8")
-    backgroundBar:SetStatusBarColor(0, 0, 0, 0.5)
+    local dark = EasyExperienceBar:GetDarkColour("background")
+    if dark then
+        backgroundBar:SetStatusBarColor(dark.r, dark.g, dark.b, dark.a)
+    else
+        backgroundBar:SetStatusBarColor(0, 0, 0, 0.5)
+    end
     backgroundBar:SetMinMaxValues(0, 100)
     backgroundBar:SetValue(100)
     return backgroundBar
@@ -636,7 +746,12 @@ function EasyExperienceBar:CreateRestedBar(parent, scale)
     restedBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
 
     restedBar:SetStatusBarTexture("Interface/Buttons/WHITE8X8")
-    restedBar:SetStatusBarColor(0.309, 0.562, 1.0, 0.5)
+    local dark = EasyExperienceBar:GetDarkColour("rested")
+    if dark then
+        restedBar:SetStatusBarColor(dark.r, dark.g, dark.b, dark.a)
+    else
+        restedBar:SetStatusBarColor(0.309, 0.562, 1.0, 0.5)
+    end
     restedBar:SetMinMaxValues(0, 100)
     restedBar:SetValue(100)
     return restedBar
@@ -649,7 +764,12 @@ function EasyExperienceBar:CreateQuestBar(parent, scale)
     questBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
 
     questBar:SetStatusBarTexture(EasyExperienceBar.global.bartexture)
-    questBar:SetStatusBarColor(1.0, 0.589, 0.0, 1)
+    local dark = EasyExperienceBar:GetDarkColour("quest")
+    if dark then
+        questBar:SetStatusBarColor(dark.r, dark.g, dark.b, dark.a)
+    else
+        questBar:SetStatusBarColor(1.0, 0.589, 0.0, 1)
+    end
     questBar:SetMinMaxValues(0, 100)
     questBar:SetValue(100)
     return questBar
@@ -780,19 +900,14 @@ function EasyExperienceBar:ChangeFrameStrata(strata)
 end
  
 function EasyExperienceBar:ChangeTexture(bartexture)
-    local startColour = _G.CreateColor(0.335, 0.388, 1.0)
-    local endColour =  _G.CreateColor(0.773, 0.380, 1.0)
+    local startColour, endColour = EasyExperienceBar:GetProgressColours()
 
-    if EasyExperienceBar.global.classColour then
-        local colourRgb
-        local _ class, _ = _G.UnitClass("player")   
-        if  C_ClassColor then
-           colourRgb = C_ClassColor.GetClassColor(class)
-        else
-           colourRgb =  RAID_CLASS_COLORS[class]
-        end
-        startColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
-        endColour = _G.CreateColor(colourRgb.r, colourRgb.g, colourRgb.b)
+    local quest = EasyExperienceBar:GetDarkColour("quest")
+    local questColour
+    if quest then
+        questColour = _G.CreateColor(quest.r, quest.g, quest.b, quest.a)
+    else
+        questColour = _G.CreateColor(1.0, 0.589, 0.0, 1)
     end
 
     if bartexture then
@@ -805,10 +920,43 @@ function EasyExperienceBar:ChangeTexture(bartexture)
         local questTexture = EasyExperienceBar.QuestBar:CreateTexture()
         questTexture:SetPoint("CENTER")
         questTexture:SetTexture(EasyExperienceBar.global.bartexture)
-        local tstart = _G.CreateColor(1.0, 0.589, 0.0, 1)
-        local tend = _G.CreateColor(1.0, 0.589, 0.0, 1)
-        questTexture:SetGradient("HORIZONTAL", tstart, tend)
+        questTexture:SetGradient("HORIZONTAL", questColour, questColour)
         EasyExperienceBar.QuestBar:SetStatusBarTexture(questTexture)
+    end
+end
+
+function EasyExperienceBar:ApplyTextColours()
+    if not EasyExperienceBar.Texts then
+        return
+    end
+
+    local colour = EasyExperienceBar:GetDarkColour("text")
+    local r, g, b = 1, 1, 1
+    if colour then
+        r, g, b = colour.r, colour.g, colour.b
+    end
+
+    for _, text in pairs(EasyExperienceBar.Texts) do
+        text:SetTextColor(r, g, b)
+    end
+end
+
+function EasyExperienceBar:ApplyColours()
+    EasyExperienceBar:ChangeTexture(EasyExperienceBar.global.bartexture)
+    EasyExperienceBar:ApplyTextColours()
+
+    local background = EasyExperienceBar:GetDarkColour("background")
+    if background then
+        EasyExperienceBar.BackgroundBar:SetStatusBarColor(background.r, background.g, background.b, background.a)
+    else
+        EasyExperienceBar.BackgroundBar:SetStatusBarColor(0, 0, 0, 0.5)
+    end
+
+    local rested = EasyExperienceBar:GetDarkColour("rested")
+    if rested then
+        EasyExperienceBar.RestedBar:SetStatusBarColor(rested.r, rested.g, rested.b, rested.a)
+    else
+        EasyExperienceBar.RestedBar:SetStatusBarColor(0.309, 0.562, 1.0, 0.5)
     end
 end
 
@@ -1084,8 +1232,11 @@ function EasyExperienceBar:UpdateCustomTexts(state)
         end
 
         if EasyExperienceBar.global.questRestedText then
-            c5 = string.format(L["Completed:"] .. " |cFFFF9700%s%%|r - " .. L["Rested:"] .. " |cFF4F90FF%s%%|r",
-               EasyExperienceBar:round(s.percentcomplete or 0, 1), EasyExperienceBar:round(s.percentrested or 0, 1))
+            c5 = string.format(L["Completed:"] .. " %s%s%%|r - " .. L["Rested:"] .. " %s%s%%|r",
+               EasyExperienceBar:GetTextColourCode("quest", "|cFFFF9700"),
+               EasyExperienceBar:round(s.percentcomplete or 0, 1),
+               EasyExperienceBar:GetTextColourCode("rested", "|cFF4F90FF"),
+               EasyExperienceBar:round(s.percentrested or 0, 1))
         end
     end
 
