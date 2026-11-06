@@ -485,9 +485,9 @@ function EasyExperienceBar.EventHandler(self, event, arg1, arg2, arg3, arg4, ...
             EasyExperienceBar.session.lastXP = _G.UnitXP("player") or 0
             EasyExperienceBar.session.maxXP = _G.UnitXPMax("player") or 0
             EasyExperienceBar.session.startTime = _G.GetServerTime()
-            EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
-            EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
         end
+        EasyExperienceBar.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
+        EasyExperienceBar.currentSessionLevelStart = _G.GetServerTime()
     elseif "PLAYER_LEVEL_UP" == event then
         EasyExperienceBar.level = arg1 or EasyExperienceBar.level
         EasyExperienceBar.isPlayerMaxLevel = EasyExperienceBar.level >= EasyExperienceBar:GetMaxLevel()
@@ -564,7 +564,7 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.session.realLevelTime = EasyExperienceBar.session.realLevelTime or 0
 
     EasyExperienceBar.session.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
-    EasyExperienceBar.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime
+    EasyExperienceBar.lastSessionLevelTime = EasyExperienceBar.session.lastSessionLevelTime or 0
     EasyExperienceBar.currentSessionLevelStart = EasyExperienceBar.session.startTime
     EasyExperienceBar.session.lastSessionTotalTime = EasyExperienceBar.session.realTotalTime
     EasyExperienceBar.currentTotalTimeStart = EasyExperienceBar.session.startTime
