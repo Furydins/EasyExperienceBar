@@ -1,6 +1,6 @@
 # EasyExperienceBar
 
-This is a port of the orginal Luxthos Experience Bar Weak Aura now converted to a regular World fo Warcrfat addon to enable it to continue to support World of Warcraft: Midnight and beyond.
+This is a port of the orginal Luxthos Experience Bar Weak Aura now converted to a regular World of Warcraft addon to enable it to continue to support World of Warcraft: Midnight and beyond.
 
 ## Features:
 
