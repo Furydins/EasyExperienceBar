@@ -1,5 +1,7 @@
 --luacheck: globals min max ceil Round strtrim
 
+_, EasyExperienceBar = ...
+
 -- Initialization
 
 EasyExperienceBar = _G.LibStub("AceAddon-3.0"):NewAddon("EasyExperienceBar", "AceConsole-3.0")
