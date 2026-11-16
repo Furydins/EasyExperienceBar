@@ -100,6 +100,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.hidePetBattle == nil then EasyExperienceBar.global.hidePetBattle = false end
     if EasyExperienceBar.global.darkMode == nil then EasyExperienceBar.global.darkMode = false end
     if EasyExperienceBar.global.darkColours == nil then EasyExperienceBar.global.darkColours = {} end
+    if EasyExperienceBar.global.showTicks == nil then EasyExperienceBar.global.showTicks = false end
 
     local function darkColourOption(part, order, name, desc)
         return {
@@ -258,12 +259,12 @@ function EasyExperienceBar:Options()
                 order = 12,
                 name = L["Display"],
             },
-             lockBar = {
+            lockBar = {
                 type = 'toggle',
                 order = 13,
                 name = L["Lock Bar"],
                 desc = L["Disables the click and drag to move function"],
-                width = "full",
+                width = "normal",
                 get = function(info)  return EasyExperienceBar.global.lockBar end,
                 set = function(info,val) if EasyExperienceBar.global.lockBar then
                                             EasyExperienceBar.global.lockBar = false
@@ -272,9 +273,24 @@ function EasyExperienceBar:Options()
                                          end
                     end,
             },
+             showGegments = {
+                type = 'toggle',
+                order = 14,
+                name = L["Show Segments"],
+                desc = L["Disables a vertical line every 10% of the bar"],
+                width = "normal",
+                get = function(info)  return EasyExperienceBar.global.showTicks end,
+                set = function(info,val) if EasyExperienceBar.global.showTicks then
+                                            EasyExperienceBar.global.showTicks = false
+                                         else
+                                            EasyExperienceBar.global.showTicks = true
+                                         end
+                                         EasyExperienceBar:Resize()
+                    end,
+            },
             width = {
                 type = 'range',
-                order = 14,
+                order = 15,
                 name = L["Width"],
                 desc = L["Adjust bar width"],
                 min  = 10,
@@ -288,7 +304,7 @@ function EasyExperienceBar:Options()
             },
             height = {
                 type = 'range',
-                order = 15,
+                order = 16,
                 name = L["Height"],
                 desc = L["Adjust bar height"],
                 min  = 2,
@@ -302,7 +318,7 @@ function EasyExperienceBar:Options()
             },
             fontSize = {
                 type = 'range',
-                order = 16,
+                order = 17,
                 name = L["Font Size"],
                 desc = L["Adjust font size"],
                 min  = 5,
@@ -316,7 +332,7 @@ function EasyExperienceBar:Options()
             },
             font = {
                 type = 'select',
-                order = 17,
+                order = 18,
                 name = L["Font"],
                 desc = L["Font Selector"],
                 dialogControl = 'LSM30_Font',
@@ -338,7 +354,7 @@ function EasyExperienceBar:Options()
             },
             outline = {
                 type = 'select',
-                order = 18,
+                order = 19,
                 name = L["Text Outline"],
                 desc = L["Adds a black outline to text"],
                 values = { ["NONE"] = L["None"], ["THICKOUTLINE"] = L["Thick Outline"], ["OUTLINE"] = L["Outline"] },
@@ -353,7 +369,7 @@ function EasyExperienceBar:Options()
             },
             textures = {
                 type = 'select',
-                order = 19,
+                order = 20,
                 name = L["Bar Texture"],
                 desc = L["Selects the texture used for the bars"],
                 dialogControl = 'LSM30_Statusbar',
@@ -375,7 +391,7 @@ function EasyExperienceBar:Options()
             },
             classColour = {
                 type = 'toggle',
-                order = 20,
+                order = 21,
                 name = L["Use Class Color"],
                 desc = L["Uses the player's class color for the progress bar"],
                 width = "full",
@@ -386,7 +402,7 @@ function EasyExperienceBar:Options()
             },
             darkMode = {
                 type = 'toggle',
-                order = 20.1,
+                order = 22,
                 name = L["Dark Mode"],
                 desc = L["Recolors the bars with a muted dark palette"],
                 width = "full",
@@ -419,12 +435,12 @@ function EasyExperienceBar:Options()
             },
             header4 = {
                 type = 'header',
-                order = 21,
+                order = 23,
                 name = L['Advanced'],
             },
             frameStrata = {
                 type = 'select',
-                order = 22,
+                order = 24,
                 name = L["FrameStrata"],
                 desc = L["Sets the Frame Level for the bar (can be used to prevent the bar from hiding 'behind' other UI elements)"],
                 values = { ["BACKGROUND"] = L["Background"], ["LOW"] = L["Low"], ["MEDIUM"] = L["Medium"], ["HIGH"] = L["High"], ["DIALOG"] = L["Dialog"] },
@@ -438,7 +454,7 @@ function EasyExperienceBar:Options()
                     end,
             },
             resetPos = {
-                order = 23,
+                order = 25,
                 type = "execute",
                 name = L["Reset Bar Position"],
                 desc = L["Resets Bar back to it's default position"],
@@ -447,7 +463,7 @@ function EasyExperienceBar:Options()
                         end
             },
               resetTimers = {
-                order = 24,
+                order = 26,
                 type = "execute",
                 name = L["Reset Timers"],
                 desc = L["Resets Session and Level time"],
@@ -631,6 +647,7 @@ function EasyExperienceBar:OnInitialize()
     EasyExperienceBar.ProgressBar:SetValue(50)
     EasyExperienceBar.ProgressBar:SetFrameLevel(40)
     EasyExperienceBar.ProgressBar:Show()
+    EasyExperienceBar.TickMarks = EasyExperienceBar:CreateTickMarks(EasyExperienceBar.ProgressBar)
 
     EasyExperienceBar.Texts = EasyExperienceBar:CreateTexts(EasyExperienceBar.ProgressBar)
     EasyExperienceBar:ApplyTextColours()
@@ -719,6 +736,28 @@ function EasyExperienceBar:CreateProgressBar(parent)
     progressBar:SetMinMaxValues(0, 100)
     progressBar:SetValue(0)
     return progressBar
+end
+
+function EasyExperienceBar:CreateTickMarks(parent)
+    local tickMarks = {}
+    local barWidth = parent:GetWidth()
+
+    for i = 1, 9 do
+        local tickMark = parent:CreateTexture(nil, "OVERLAY")
+        tickMark:SetTexture("Interface/Buttons/WHITE8X8")
+        tickMark:SetVertexColor(1, 1, 1, 0.6)
+        tickMark:SetWidth(1)
+        tickMark:SetPoint("TOP", parent, "TOPLEFT", barWidth * i / 10, 0)
+        tickMark:SetPoint("BOTTOM", parent, "BOTTOMLEFT", barWidth * i / 10, 0)
+        tickMarks[i] = tickMark
+        if not EasyExperienceBar.global.showTicks then
+            tickMark:Hide()
+        else
+            tickMark:Show()
+        end
+    end
+
+    return tickMarks
 end
 
 function EasyExperienceBar:CreateBackgroundBar(parent, scale)
@@ -866,6 +905,19 @@ function EasyExperienceBar:Resize()
     EasyExperienceBar.BackgroundBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
     EasyExperienceBar.RestedBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
     EasyExperienceBar.QuestBar:SetSize(EasyExperienceBar.global.barWidth, EasyExperienceBar.global.barHeight)
+
+    for i, tickMark in ipairs(EasyExperienceBar.TickMarks) do
+        local xOffset = EasyExperienceBar.global.barWidth * i / 10
+        tickMark:ClearAllPoints()
+        tickMark:SetPoint("TOP", EasyExperienceBar.ProgressBar, "TOPLEFT", xOffset, 0)
+        tickMark:SetPoint("BOTTOM", EasyExperienceBar.ProgressBar, "BOTTOMLEFT", xOffset, 0)
+        if not EasyExperienceBar.global.showTicks then
+            tickMark:Hide()
+        else
+            tickMark:Show()
+        end
+    end
+
     EasyExperienceBar.Texts.levelText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
     EasyExperienceBar.Texts.progressText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)
     EasyExperienceBar.Texts.percentText:SetFont(EasyExperienceBar.global.font, EasyExperienceBar.global.fontSize, fontOutline)

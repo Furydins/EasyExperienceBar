@@ -82,3 +82,7 @@ L["Text Color"] = true
 L["Color of every text on the bar"] = true
 L["Reset Dark Mode Colors"] = true
 L["Restores the default Dark Mode colors"] = true
+L["Show Segments"] = true
+L["Disables a vertical line every 10% of the bar"] = true
+
+
