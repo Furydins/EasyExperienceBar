@@ -291,7 +291,7 @@ function EasyExperienceBar:Options()
                 order = 15,
                 name = L["Height"],
                 desc = L["Adjust bar height"],
-                min  = 10,
+                min  = 2,
                 max  = 100, 
                 step = 1,
                 width = "full",
