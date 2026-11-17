@@ -84,5 +84,7 @@ L["Reset Dark Mode Colors"] = true
 L["Restores the default Dark Mode colors"] = true
 L["Show Segments"] = true
 L["Disables a vertical line every 10% of the bar"] = true
+L["Progress Summary Text"] = true
+L["Show the progress summary text on the bar"] = true
 
 

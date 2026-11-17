@@ -101,6 +101,7 @@ function EasyExperienceBar:Options()
     if EasyExperienceBar.global.darkMode == nil then EasyExperienceBar.global.darkMode = false end
     if EasyExperienceBar.global.darkColours == nil then EasyExperienceBar.global.darkColours = {} end
     if EasyExperienceBar.global.showTicks == nil then EasyExperienceBar.global.showTicks = false end
+    if EasyExperienceBar.global.summaryText == nil then EasyExperienceBar.global.summaryText = true end
 
     local function darkColourOption(part, order, name, desc)
         return {
@@ -185,9 +186,20 @@ function EasyExperienceBar:Options()
                     then EasyExperienceBar.global.questRestedText = false
                     else EasyExperienceBar.global.questRestedText = true end end,
             },
-            questBar = {
+            summaryText = {
                 type = 'toggle',
                 order = 6,
+                name = L["Progress Summary Text"],
+                desc = L["Show the progress summary text on the bar"],
+                width = "full",
+                get = function(info)  return EasyExperienceBar.global.summaryText end,
+                set = function(info,val) if EasyExperienceBar.global.summaryText
+                    then EasyExperienceBar.global.summaryText = false
+                    else EasyExperienceBar.global.summaryText = true end end,
+            },
+            questBar = {
+                type = 'toggle',
+                order = 7,
                 name = L["Completed Quest XP Bar"],
                 desc = L["Show a bar indicating how much XP is available from completed quests"],
                 width = "full",
@@ -198,12 +210,12 @@ function EasyExperienceBar:Options()
             },
             header2 = {
                 type = 'header',
-                order = 7,
+                order = 8,
                 name = L["Settings"],
             },
             showMaxLevel = {
                 type = 'toggle',
-                order = 8,
+                order = 9,
                 name = L["Show Bar at Max Level"],
                 desc = L["Do not hide the bar on max level characters"],
                 width = "full",
@@ -214,7 +226,7 @@ function EasyExperienceBar:Options()
             },
             hidePetBattle = {
                 type = 'toggle',
-                order = 9,
+                order = 10,
                 name = L["Hide Bar in Pet Battles"],
                 desc = L["Hides the experience bar during pet battles"],
                 hidden = function() 
@@ -229,7 +241,7 @@ function EasyExperienceBar:Options()
             },
             resetReload = {
                 type = 'toggle',
-                order = 10,
+                order = 11,
                 name = L["Reset Session Time and XP/Hour on Reload UI"],
                 desc = L["Do not retain stats after a /reload"],
                 width = "full",
@@ -240,7 +252,7 @@ function EasyExperienceBar:Options()
             },
             hideXPBar = {
                 type = 'toggle',
-                order = 11,
+                order = 12,
                 name = L["Hide Default Experience Bar"],
                 desc = L["Hides the standard XP bar"],
                 width = "full",
@@ -256,12 +268,12 @@ function EasyExperienceBar:Options()
             },
             header3 = {
                 type = 'header',
-                order = 12,
+                order = 13,
                 name = L["Display"],
             },
             lockBar = {
                 type = 'toggle',
-                order = 13,
+                order = 14,
                 name = L["Lock Bar"],
                 desc = L["Disables the click and drag to move function"],
                 width = "normal",
@@ -275,7 +287,7 @@ function EasyExperienceBar:Options()
             },
              showGegments = {
                 type = 'toggle',
-                order = 14,
+                order = 15,
                 name = L["Show Segments"],
                 desc = L["Disables a vertical line every 10% of the bar"],
                 width = "normal",
@@ -290,7 +302,7 @@ function EasyExperienceBar:Options()
             },
             width = {
                 type = 'range',
-                order = 15,
+                order = 16,
                 name = L["Width"],
                 desc = L["Adjust bar width"],
                 min  = 10,
@@ -304,7 +316,7 @@ function EasyExperienceBar:Options()
             },
             height = {
                 type = 'range',
-                order = 16,
+                order = 17,
                 name = L["Height"],
                 desc = L["Adjust bar height"],
                 min  = 2,
@@ -318,7 +330,7 @@ function EasyExperienceBar:Options()
             },
             fontSize = {
                 type = 'range',
-                order = 17,
+                order = 18,
                 name = L["Font Size"],
                 desc = L["Adjust font size"],
                 min  = 5,
@@ -332,7 +344,7 @@ function EasyExperienceBar:Options()
             },
             font = {
                 type = 'select',
-                order = 18,
+                order = 19,
                 name = L["Font"],
                 desc = L["Font Selector"],
                 dialogControl = 'LSM30_Font',
@@ -354,7 +366,7 @@ function EasyExperienceBar:Options()
             },
             outline = {
                 type = 'select',
-                order = 19,
+                order = 20,
                 name = L["Text Outline"],
                 desc = L["Adds a black outline to text"],
                 values = { ["NONE"] = L["None"], ["THICKOUTLINE"] = L["Thick Outline"], ["OUTLINE"] = L["Outline"] },
@@ -369,7 +381,7 @@ function EasyExperienceBar:Options()
             },
             textures = {
                 type = 'select',
-                order = 20,
+                order = 21,
                 name = L["Bar Texture"],
                 desc = L["Selects the texture used for the bars"],
                 dialogControl = 'LSM30_Statusbar',
@@ -391,7 +403,7 @@ function EasyExperienceBar:Options()
             },
             classColour = {
                 type = 'toggle',
-                order = 21,
+                order = 22,
                 name = L["Use Class Color"],
                 desc = L["Uses the player's class color for the progress bar"],
                 width = "full",
@@ -402,7 +414,7 @@ function EasyExperienceBar:Options()
             },
             darkMode = {
                 type = 'toggle',
-                order = 22,
+                order = 23,
                 name = L["Dark Mode"],
                 desc = L["Recolors the bars with a muted dark palette"],
                 width = "full",
@@ -411,19 +423,19 @@ function EasyExperienceBar:Options()
                      EasyExperienceBar:ApplyColours()
                     end,
             },
-            darkProgress = darkColourOption("progress", 20.2, L["Progress Color"],
+            darkProgress = darkColourOption("progress", 24, L["Progress Color"],
                 L["Color of the filled experience bar (ignored while Use Class Color is on)"]),
-            darkBackground = darkColourOption("background", 20.3, L["Background Color"],
+            darkBackground = darkColourOption("background", 25, L["Background Color"],
                 L["Color of the empty part of the bar"]),
-            darkRested = darkColourOption("rested", 20.4, L["Rested Color"],
+            darkRested = darkColourOption("rested", 26, L["Rested Color"],
                 L["Color of the rested experience overlay"]),
-            darkQuest = darkColourOption("quest", 20.5, L["Quest Color"],
+            darkQuest = darkColourOption("quest", 27, L["Quest Color"],
                 L["Color of the completed quest experience overlay"]),
-            darkText = darkColourOption("text", 20.6, L["Text Color"],
+            darkText = darkColourOption("text", 28, L["Text Color"],
                 L["Color of every text on the bar"]),
             darkReset = {
                 type = 'execute',
-                order = 20.7,
+                order = 29,
                 name = L["Reset Dark Mode Colors"],
                 desc = L["Restores the default Dark Mode colors"],
                 width = "normal",
@@ -435,12 +447,12 @@ function EasyExperienceBar:Options()
             },
             header4 = {
                 type = 'header',
-                order = 23,
+                order = 30,
                 name = L['Advanced'],
             },
             frameStrata = {
                 type = 'select',
-                order = 24,
+                order = 31,
                 name = L["FrameStrata"],
                 desc = L["Sets the Frame Level for the bar (can be used to prevent the bar from hiding 'behind' other UI elements)"],
                 values = { ["BACKGROUND"] = L["Background"], ["LOW"] = L["Low"], ["MEDIUM"] = L["Medium"], ["HIGH"] = L["High"], ["DIALOG"] = L["Dialog"] },
@@ -454,7 +466,7 @@ function EasyExperienceBar:Options()
                     end,
             },
             resetPos = {
-                order = 25,
+                order = 32,
                 type = "execute",
                 name = L["Reset Bar Position"],
                 desc = L["Resets Bar back to it's default position"],
@@ -463,7 +475,7 @@ function EasyExperienceBar:Options()
                         end
             },
               resetTimers = {
-                order = 26,
+                order = 33,
                 type = "execute",
                 name = L["Reset Timers"],
                 desc = L["Resets Session and Level time"],
@@ -1261,17 +1273,19 @@ function EasyExperienceBar:UpdateCustomTexts(state)
     local s = state or EasyExperienceBar.state
     local isMaxLevel = EasyExperienceBar.isPlayerMaxLevel
 
-    c1 = "Level " .. (s.level or _G.UnitLevel("player"))
+    if EasyExperienceBar.global.summaryText then
+        c1 = "Level " .. (s.level or _G.UnitLevel("player"))
 
-    if isMaxLevel then
-        c2 = L["Max Level"]
-    else
-        c2 = string.format("%s / %s (%s)", _G.FormatLargeNumber(s.currentXP or 0),
-            _G.FormatLargeNumber(s.totalXP or 0), _G.FormatLargeNumber(s.remainingXP or 0))
+        if isMaxLevel then
+            c2 = L["Max Level"]
+        else
+            c2 = string.format("%s / %s (%s)", _G.FormatLargeNumber(s.currentXP or 0),
+                _G.FormatLargeNumber(s.totalXP or 0), _G.FormatLargeNumber(s.remainingXP or 0))
+        end
+
+        c3 = string.format("%s%%" .. ((s.percentcomplete or 0) > 0 and " (%s%%)" or ""),
+            EasyExperienceBar:round(s.percentXP or 0, 1), EasyExperienceBar:round(s.totalpercentcomplete or 0, 1))
     end
-
-    c3 = string.format("%s%%" .. ((s.percentcomplete or 0) > 0 and " (%s%%)" or ""),
-       EasyExperienceBar:round(s.percentXP or 0, 1), EasyExperienceBar:round(s.totalpercentcomplete or 0, 1))
 
     if not isMaxLevel then
 
